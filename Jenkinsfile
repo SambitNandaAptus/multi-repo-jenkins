@@ -18,7 +18,7 @@ pipeline {
                 script {
                     echo "Checking out meta repo to read services-config.yaml"
                     dir("${env.META_REPO_DIR}") {
-                        git branch: "main", url: "https://github.com/KhushiT-aptus/MetaRepo-jenkins.git"
+                        git branch: "main", url: "https://github.com/SambitNandaAptus/multi-repo-jenkins.git"
                     }
                 }
             }
@@ -44,14 +44,15 @@ pipeline {
             }
         }
 
-        stage('Checkout Service Repo') {
-            steps {
-                script {
-                    def branch = params.branch_name.replace('refs/heads/', '')
-                    git branch: branch, url: env.REPO_URL
-                }
-            }
+       stage('Checkout Service Repo') {
+    steps {
+        script {
+            def branch = params.branch_name.replace('refs/heads/', '')
+            git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
         }
+    }
+}
+
 
         stage('SonarQube Analysis') {
             steps {
@@ -135,7 +136,7 @@ pipeline {
 }
 
 
-    } // <-- Close stages block
+    }
 
     post {
         success {
@@ -146,4 +147,4 @@ pipeline {
         }
     }
 
-} // <-- Close pipeline
+}
