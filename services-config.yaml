@@ -22,6 +22,9 @@ pie-backend-auth:
 pie-bl:
   REPO_URL: "https://github.com/Amneal-pie/pie-bl.git"
   DEPLOY_SERVER: "192.168.1.235" 
+pie-ui:
+  REPO_URL: "https://github.com/Amneal-pie/pie-ui.git"
+  DEPLOY_SERVER: "192.168.1.235"  
 fastapi-demo-app:
   REPO_URL: "https://github.com/SambitNandaAptus/fastapi-demo-app.git"
   DEPLOY_SERVER: "192.168.1.235" 
