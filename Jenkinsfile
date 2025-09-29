@@ -200,7 +200,7 @@ pipeline {
             echo "Sending SUCCESS email to: ${recipient}"
 
             emailext(
-                to: "recipient",
+                to: recipient,
                 subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
                     <p>Hi,</p>
