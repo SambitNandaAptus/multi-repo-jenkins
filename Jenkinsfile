@@ -140,7 +140,7 @@ pipeline {
 
   post {
     success {
-        setGitHubCommitStatus(
+        githubNotify(
             repository: params.repo_name,
             sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
             credentialsId: 'git-secret',
@@ -150,7 +150,7 @@ pipeline {
         )
     }
     failure {
-        setGitHubCommitStatus(
+       githubNotify(
             repository: params.repo_name,
             sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
             credentialsId: 'git-secret',
