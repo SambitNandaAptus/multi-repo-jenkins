@@ -9,6 +9,7 @@ pipeline {
     environment {
         SONAR_TOKEN   = credentials('sonar-token')
         META_REPO_DIR = "${WORKSPACE}/meta-repo"
+        SMTP_CREDENTIALS = credentials('git-test') 
     }
 
     stages {
@@ -199,7 +200,7 @@ pipeline {
             echo "Sending SUCCESS email to: ${recipient}"
 
             emailext(
-                to: "kthacker862@gmail.com",
+                to: "recipient",
                 subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
                     <p>Hi,</p>
@@ -207,7 +208,7 @@ pipeline {
                     <p>Build details: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                 """,
                 mimeType: 'text/html',
-                from: "khushithacker2003@gmail.com" // must match the email in Jenkins SMTP config
+                from: SMTP_CREDENTIALS_USR,   // must match the email in Jenkins SMTP config
             )
         }
     }
@@ -230,7 +231,7 @@ pipeline {
                     <p>Check the logs: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                 """,
                 mimeType: 'text/html',
-                from: "khushithacker2003@gmail.com"
+                from: SMTP_CREDENTIALS_USR,  
             )
         }
     }
