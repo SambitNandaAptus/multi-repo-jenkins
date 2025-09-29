@@ -138,12 +138,12 @@ pipeline {
 
     }
 
-    post {
+   post {
         success {
-            echo "Deployment successful for ${env.SERVICE_NAME} on branch ${params.branch_name}"
+            githubNotify context: 'CI/CD', status: 'SUCCESS', description: 'Build passed'
         }
         failure {
-            echo "Deployment FAILED for ${env.SERVICE_NAME} on branch ${params.branch_name}"
+            githubNotify context: 'CI/CD', status: 'FAILURE', description: 'Build failed'
         }
     }
 
