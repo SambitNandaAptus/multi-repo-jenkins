@@ -138,13 +138,28 @@ pipeline {
 
     }
 
-   post {
-        success {
-            githubNotify context: 'CI/CD', status: 'SUCCESS', description: 'Build passed'
-        }
-        failure {
-            githubNotify context: 'CI/CD', status: 'FAILURE', description: 'Build failed'
-        }
+  post {
+    success {
+        setGitHubCommitStatus(
+            repository: params.repo_name,
+            sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
+            credentialsId: 'git-secret',
+            state: 'SUCCESS',
+            context: 'CI/CD',
+            description: 'Build passed'
+        )
     }
+    failure {
+        setGitHubCommitStatus(
+            repository: params.repo_name,
+            sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
+            credentialsId: 'git-secret',
+            state: 'FAILURE',
+            context: 'CI/CD',
+            description: 'Build failed'
+        )
+    }
+}
+
 
 }
