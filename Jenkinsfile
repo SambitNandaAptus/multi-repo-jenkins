@@ -194,7 +194,7 @@ pipeline {
             if (!recipient) {
                 recipient = "kthacker862@gmail.com" 
             }
-            recipient += ",${env.HEAD_DEV_EMAIL}"
+    
 
             echo "Sending SUCCESS email to: ${recipient}"
 
