@@ -187,37 +187,55 @@ pipeline {
 //     }
 // }
     post {
-        success {
-            withCredentials([usernamePassword(credentialsId: 'gmail-smtp', usernameVariable: 'EMAIL_USER', passwordVariable: 'EMAIL_PASS')]) {
-                emailext(
-                    to: "${env.COMMIT_AUTHOR_EMAIL}, ${env.HEAD_DEV_EMAIL}",
-                    subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                    body: """
-                        <p>Hi,</p>
-                        <p>The commit to <b>${params.repo_name}</b> on branch <b>${params.branch_name}</b> has successfully built!</p>
-                        <p>Build details: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
-                    """,
-                    mimeType: 'text/html',
-                    from: "${EMAIL_USER}"
-                )
+    success {
+        script {
+            // Fallback if commit author email is empty
+            def recipient = env.COMMIT_AUTHOR_EMAIL?.trim()
+            if (!recipient) {
+                recipient = "kthacker862@gmail.com" 
             }
-        }
-        failure {
-            withCredentials([usernamePassword(credentialsId: 'gmail-smtp', usernameVariable: 'EMAIL_USER', passwordVariable: 'EMAIL_PASS')]) {
-                emailext(
-                    to: "${env.COMMIT_AUTHOR_EMAIL}, ${env.HEAD_DEV_EMAIL}",
-                    subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                    body: """
-                        <p>Hi,</p>
-                        <p>The commit to <b>${params.repo_name}</b> on branch <b>${params.branch_name}</b> failed the build.</p>
-                        <p>Check the logs: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
-                    """,
-                    mimeType: 'text/html',
-                    from: "${EMAIL_USER}"
-                )
-            }
+            recipient += ",${env.HEAD_DEV_EMAIL}"
+
+            echo "Sending SUCCESS email to: ${recipient}"
+
+            emailext(
+                to: recipient,
+                subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    <p>Hi,</p>
+                    <p>The commit to <b>${params.repo_name}</b> on branch <b>${params.branch_name}</b> has successfully built!</p>
+                    <p>Build details: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                """,
+                mimeType: 'text/html',
+                from: "khushithacker2003@gmail.com" // must match the email in Jenkins SMTP config
+            )
         }
     }
+    failure {
+        script {
+            def recipient = env.COMMIT_AUTHOR_EMAIL?.trim()
+            if (!recipient) {
+                recipient = "kthacker862@gmail.com"
+            }
+            recipient += ",${env.HEAD_DEV_EMAIL}"
+
+            echo "Sending FAILURE email to: ${recipient}"
+
+            emailext(
+                to: recipient,
+                subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    <p>Hi,</p>
+                    <p>The commit to <b>${params.repo_name}</b> on branch <b>${params.branch_name}</b> failed the build.</p>
+                    <p>Check the logs: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                """,
+                mimeType: 'text/html',
+                from: "khushithacker2003@gmail.com"
+            )
+        }
+    }
+}
+
 
 
 
