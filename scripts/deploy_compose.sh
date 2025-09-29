@@ -23,6 +23,7 @@ docker rm ${IMAGE##*/} || true
 # Assumes docker-compose.yml exists on the remote server in /tmp
 SERVICE_NAME="${IMAGE##*/}"
 ENV_PATH="/home/aptus/pie-dev-dir/${SERVICE_NAME}/.env"
+echo "${ENV_PATH}"
 
 docker compose --env-file "${ENV_PATH}" -f /home/aptus/pie-dev-dir/docker-compose.yml up -d
 
