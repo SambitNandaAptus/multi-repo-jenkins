@@ -55,6 +55,9 @@ pipeline {
 
 
         stage('SonarQube Analysis') {
+            when {
+        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    }
             steps {
                 withSonarQubeEnv('SonarServer') {
                     script {
@@ -72,6 +75,9 @@ pipeline {
         }
 
         stage('Quality Gate') {
+            when {
+        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    }
             steps {
                 timeout(time: 2, unit: 'MINUTES') {
                     script {
@@ -83,6 +89,9 @@ pipeline {
         }
 
         stage('Build Docker Image') {
+            when {
+        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    }
             steps {
                 script {
                     def imageTag   = "${env.SERVICE_NAME}:${params.branch_name.replaceAll('refs/heads/', '').replaceAll('/', '-')}"
@@ -102,6 +111,9 @@ pipeline {
         }
 
        stage('Deploy Service') {
+           when {
+        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    }
     steps {
         sshagent(['ssh-deploy-key']) {
             withCredentials([usernamePassword(credentialsId: 'docker-creds',
