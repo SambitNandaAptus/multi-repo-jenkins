@@ -9,7 +9,19 @@ fastapi-test:
   DEPLOY_SERVER: "192.168.1.235"  
 pie-backend-chatbot:
   REPO_URL: "https://github.com/Amneal-pie/pie-backend-chatbot.git"
-  DEPLOY_SERVER: "192.168.1.235"  
+  DEPLOY_SERVER: "192.168.1.235" 
+pie-backend-logs:
+  REPO_URL: "https://github.com/Amneal-pie/pie-backend-logs.git"
+  DEPLOY_SERVER: "192.168.1.235" 
+pie-backend-dashboard:
+  REPO_URL: "https://github.com/Amneal-pie/pie-backend-dashboard.git"
+  DEPLOY_SERVER: "192.168.1.235"
+pie-backend-auth:
+  REPO_URL: "https://github.com/Amneal-pie/pie-backend-auth.git"
+  DEPLOY_SERVER: "192.168.1.235" 
+pie-blh:
+  REPO_URL: "https://github.com/Amneal-pie/pie-bl.git"
+  DEPLOY_SERVER: "192.168.1.235" 
 fastapi-demo-app:
   REPO_URL: "https://github.com/SambitNandaAptus/fastapi-demo-app.git"
   DEPLOY_SERVER: "192.168.1.235" 
