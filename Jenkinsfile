@@ -141,7 +141,7 @@ pipeline {
  post {
     success {
         githubNotify(
-            account: 'SambitNandaAptus',                              
+            account: 'Amneal-pie',                              
             repo: "${params.repo_name}",                              
             sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
             credentialsId: 'git-secret',                            
@@ -152,7 +152,7 @@ pipeline {
     }
     failure {
         githubNotify(
-            account: 'SambitNandaAptus',
+            account: 'Amneal-pie',
             repo: "${params.repo_name}",
             sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
             credentialsId: 'git-secret',
