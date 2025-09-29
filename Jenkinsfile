@@ -52,6 +52,18 @@ pipeline {
         }
     }
 }
+        stage('Get Commit Author') {
+    steps {
+        script {
+            env.COMMIT_AUTHOR_EMAIL = sh(
+                script: "git log -1 --pretty=format:'%ae'",
+                returnStdout: true
+            ).trim()
+            echo "Commit author: ${env.COMMIT_AUTHOR_EMAIL}"
+        }
+    }
+}
+
 
 
         stage('SonarQube Analysis') {
@@ -150,30 +162,67 @@ pipeline {
 
     }
 
- post {
+//  post {
+//     success {
+//         githubNotify(
+//             account: 'Amneal-pie',                              
+//             repo: "${params.repo_name}",                              
+//             sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
+//             credentialsId: 'git-secret',                            
+//             status: 'SUCCESS',                                         
+//             context: 'CI/CD',
+//             description: 'Build passed'
+//         )
+//     }
+//     failure {
+//         githubNotify(
+//             account: 'Amneal-pie',
+//             repo: "${params.repo_name}",
+//             sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
+//             credentialsId: 'git-secret',
+//             status: 'FAILURE',
+//             context: 'CI/CD',
+//             description: 'Build failed'
+//         )
+//     }
+// }
+    post {
     success {
-        githubNotify(
-            account: 'Amneal-pie',                              
-            repo: "${params.repo_name}",                              
-            sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
-            credentialsId: 'git-secret',                            
-            status: 'SUCCESS',                                         
-            context: 'CI/CD',
-            description: 'Build passed'
-        )
+        withCredentials([usernamePassword(credentialsId: 'gmail-smtp', usernameVariable: 'EMAIL_USER', passwordVariable: 'EMAIL_PASS')]) {
+            emailext(
+                to: "${env.COMMIT_AUTHOR_EMAIL}, ${env.HEAD_DEV_EMAIL}",
+                subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    <p>Hi,</p>
+                    <p>The commit to <b>${params.repo_name}</b> on branch <b>${params.branch_name}</b> has successfully built!</p>
+                    <p>Build details: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                """,
+                mimeType: 'text/html',
+                from: "${EMAIL_USER}",
+                smtpUsername: "${EMAIL_USER}",
+                smtpPassword: "${EMAIL_PASS}"
+            )
+        }
     }
     failure {
-        githubNotify(
-            account: 'Amneal-pie',
-            repo: "${params.repo_name}",
-            sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
-            credentialsId: 'git-secret',
-            status: 'FAILURE',
-            context: 'CI/CD',
-            description: 'Build failed'
-        )
+        withCredentials([usernamePassword(credentialsId: 'gmail-smtp', usernameVariable: 'EMAIL_USER', passwordVariable: 'EMAIL_PASS')]) {
+            emailext(
+                to: "${env.COMMIT_AUTHOR_EMAIL}, ${env.HEAD_DEV_EMAIL}",
+                subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    <p>Hi,</p>
+                    <p>The commit to <b>${params.repo_name}</b> on branch <b>${params.branch_name}</b> failed the build.</p>
+                    <p>Check the logs: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                """,
+                mimeType: 'text/html',
+                from: "${EMAIL_USER}",
+                smtpUsername: "${EMAIL_USER}",
+                smtpPassword: "${EMAIL_PASS}"
+            )
+        }
     }
 }
+
 
 
 }
