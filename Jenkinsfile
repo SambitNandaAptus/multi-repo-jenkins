@@ -138,23 +138,25 @@ pipeline {
 
     }
 
-  post {
+ post {
     success {
         githubNotify(
-            repository: params.repo_name,
+            account: 'SambitNandaAptus',                              
+            repo: "${params.repo_name}",                              
             sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
-            credentialsId: 'git-secret',
-            state: 'SUCCESS',
+            credentialsId: 'git-secret',                            
+            status: 'SUCCESS',                                         
             context: 'CI/CD',
             description: 'Build passed'
         )
     }
     failure {
-       githubNotify(
-            repository: params.repo_name,
+        githubNotify(
+            account: 'SambitNandaAptus',
+            repo: "${params.repo_name}",
             sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
             credentialsId: 'git-secret',
-            state: 'FAILURE',
+            status: 'FAILURE',
             context: 'CI/CD',
             description: 'Build failed'
         )
