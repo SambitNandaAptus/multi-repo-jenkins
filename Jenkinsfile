@@ -86,19 +86,19 @@ pipeline {
             }
         }
 
-    //     stage('Quality Gate') {
-    //         when {
-    //     expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
-    // }
-    //         steps {
-    //             timeout(time: 2, unit: 'MINUTES') {
-    //                 script {
-    //                     def qg = waitForQualityGate(abortPipeline: true)
-    //                     echo "Quality Gate Status: ${qg.status}"
-    //                 }
-    //             }
-    //         }
-    //     }
+        stage('Quality Gate') {
+            when {
+        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    }
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    script {
+                        def qg = waitForQualityGate(abortPipeline: true)
+                        echo "Quality Gate Status: ${qg.status}"
+                    }
+                }
+            }
+        }
 
         stage('Build Docker Image') {
             when {
@@ -199,7 +199,7 @@ pipeline {
             echo "Sending SUCCESS email to: ${recipient}"
 
             emailext(
-                to: recipient,
+                to: "kthacker862@gmail.com",
                 subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
                     <p>Hi,</p>
