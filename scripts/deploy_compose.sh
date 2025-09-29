@@ -21,7 +21,11 @@ docker rm ${IMAGE##*/} || true
 
 # Use docker-compose to start the service
 # Assumes docker-compose.yml exists on the remote server in /tmp
-docker compose --env-file /home/aptus/pie-dev-dir/.env -f /home/aptus/pie-dev-dir/docker-compose.yml up -d
+SERVICE_NAME="${IMAGE##*/}"
+ENV_PATH="/home/aptus/pie-dev-dir/${SERVICE_NAME}/.env"
+
+docker compose --env-file "${ENV_PATH}" -f /home/aptus/pie-dev-dir/docker-compose.yml up -d
+
 
 
 echo "[DEPLOY] Deployment completed!"
