@@ -1,0 +1,15 @@
+Astra-AI:
+  REPO_URL: "https://github.com/KhushiT-aptus/Astra-AI.git"
+  DEPLOY_SERVER: "192.168.1.235"
+aptusbot-demo:
+  REPO_URL: "https://github.com/KhushiT-aptus/aptusbot-demo.git"
+  DEPLOY_SERVER: "192.168.1.235"  
+fastapi-test:
+  REPO_URL: "https://github.com/KhushiT-aptus/fastapi-test.git"
+  DEPLOY_SERVER: "192.168.1.235"  
+pie-backend-chatbot:
+  REPO_URL: "https://github.com/Amneal-pie/pie-backend-chatbot.git"
+  DEPLOY_SERVER: "192.168.1.235"  
+fastapi-demo-app:
+  REPO_URL: "https://github.com/SambitNandaAptus/fastapi-demo-app.git"
+  DEPLOY_SERVER: "192.168.1.235" 
