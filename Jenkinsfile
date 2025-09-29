@@ -200,7 +200,7 @@ pipeline {
 
             emailext(
                 to: recipient,
-                subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
                     <p>Hi,</p>
                     <p>The commit to <b>${params.repo_name}</b> on branch <b>${params.branch_name}</b> has successfully built!</p>
@@ -223,7 +223,7 @@ pipeline {
 
             emailext(
                 to: recipient,
-                subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                subject: " Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
                     <p>Hi,</p>
                     <p>The commit to <b>${params.repo_name}</b> on branch <b>${params.branch_name}</b> failed the build.</p>
