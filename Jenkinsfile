@@ -236,6 +236,36 @@ pipeline {
         }
     }
 }
+    stage('Manual Approval for Staging') {
+    when {
+        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    }
+    steps {
+        script {
+            def approvers = "khushi.thacker@aptusdatalabs.com"
+            
+            // Send approval request email
+            emailext(
+                to: approvers,
+                subject: "🚦 Approval Needed: Promote ${env.SERVICE_NAME} to Staging",
+                body: """
+                    <p>Hi,</p>
+                    <p>The build for <b>${env.SERVICE_NAME}</b> (commit <code>${env.COMMIT_SHA}</code>) passed in <b>dev</b>.</p>
+                    <p><b>Image:</b> ${env.IMAGE_FULL}</p>
+                    <p>Please <a href="${env.BUILD_URL}input/">click here to approve deployment</a> to staging.</p>
+                    <p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                """,
+                mimeType: 'text/html'
+            )
+
+            // Pause and wait for approval in Jenkins
+            timeout(time: 2, unit: 'HOURS') {
+                input message: "🚀 Approve deployment of ${env.IMAGE_FULL} to STAGING?", ok: "Deploy"
+            }
+        }
+    }
+}
+
 
 
 
