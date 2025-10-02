@@ -184,11 +184,14 @@ pipeline {
                 cd ${DOCS_DIR}/sphinx/pdf/latex && make all-pdf
 
                 # 2️⃣ Markdown guides (user/deployment guides)
-                for f in ${env.META_REPO_DIR}/docs/markdown/*.md; do
-                    fname=$(basename $f .md)
-                    pandoc $f -s -o ${DOCS_DIR}/markdown/html/$fname.html
-                    pandoc $f -o ${DOCS_DIR}/markdown/pdf/$fname.pdf
-                done
+              sh """
+    for f in ${env.META_REPO_DIR}/docs/markdown/*.md; do
+        fname=\\\$(basename \$f .md)
+        pandoc \$f -s -o ${DOCS_DIR}/markdown/html/\\\$fname.html
+        pandoc \$f -o ${DOCS_DIR}/markdown/pdf/\\\$fname.pdf
+    done
+"""
+
             """
         }
     }
