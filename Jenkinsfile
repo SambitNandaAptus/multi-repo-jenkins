@@ -74,6 +74,20 @@ pipeline {
                 }
             }
         }
+          //     stage('Quality Gate') {
+    //         when {
+    //     expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    // }
+    //         steps {
+    //             timeout(time: 2, unit: 'MINUTES') {
+    //                 script {
+    //                     def qg = waitForQualityGate(abortPipeline: true)
+    //                     echo "Quality Gate Status: ${qg.status}"
+    //                 }
+    //             }
+    //         }
+    //     }
+
 
        stage('Build Docker Image') {
             when {
@@ -145,7 +159,6 @@ pipeline {
                 body: """
                     <p>Hi,</p>
                     <p>The commit <b>${env.COMMIT_SHA}</b> on branch <b>${params.branch_name}</b> was successfully built and deployed to DEV.</p>
-                    <p>Image: ${env.IMAGE_FULL}</p>
                     <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
                 """,
                 mimeType: 'text/html',
@@ -195,7 +208,7 @@ pipeline {
                 emailext(
                     to: "khushi.thacker@aptusdatalabs.com,${env.COMMIT_AUTHOR_EMAIL}",
                     subject: " Staging Deployment Success: ${env.SERVICE_NAME}",
-                    body: "<p>Image ${env.IMAGE_FULL} successfully deployed to STAGING.</p>",
+                    body: "<p>Image has been successfully deployed to STAGING.</p>",
                     mimeType: 'text/html',
                     from: SMTP_CREDENTIALS_USR
                 )
@@ -204,7 +217,7 @@ pipeline {
                 emailext(
                     to: "khushi.thacker@aptusdatalabs.com,${env.COMMIT_AUTHOR_EMAIL}",
                     subject: " Staging Deployment NOT Approved: ${env.SERVICE_NAME}",
-                    body: "<p>The deployment of ${env.IMAGE_FULL} to STAGING was aborted or disapproved.</p>",
+                    body: "<p>The deployment to STAGING was aborted or disapproved.</p>",
                     mimeType: 'text/html',
                     from: SMTP_CREDENTIALS_USR
                 )
@@ -214,6 +227,29 @@ pipeline {
         }
     }
 }
+        stage('Notify Production') {
+    when {
+        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    }
+    steps {
+        script {
+            def recipients = "khushi.thacker@aptusdatalabs.com,${env.COMMIT_AUTHOR_EMAIL ?: 'khushi.thacker@aptusdatalabs.com'}"
+            emailext(
+                to: recipients,
+                subject: "Ready for Production: ${env.SERVICE_NAME}",
+                body: """
+                    <p>Hi Team,</p>
+                    <p>The service <b>${env.SERVICE_NAME}</b> has been successfully deployed to <b>STAGING</b>.</p>
+                    <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
+                    <p>It is now ready for production deployment.</p>
+                """,
+                mimeType: 'text/html',
+                from: env.SMTP_CREDENTIALS_USR
+            )
+        }
+    }
+}
+
 
 
     }
