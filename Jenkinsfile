@@ -134,6 +134,27 @@ pipeline {
         }
     }
 }
+        stage('Notify Dev Success') {
+    when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
+    steps {
+        script {
+            def recipient = env.COMMIT_AUTHOR_EMAIL?.trim() ?: "kthacker862@gmail.com"
+            emailext(
+                to: recipient,
+                subject: " Dev Deployment Success: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    <p>Hi,</p>
+                    <p>The commit <b>${env.COMMIT_SHA}</b> on branch <b>${params.branch_name}</b> was successfully built and deployed to DEV.</p>
+                    <p>Image: ${env.IMAGE_FULL}</p>
+                    <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
+                """,
+                mimeType: 'text/html',
+                from: SMTP_CREDENTIALS_USR
+            )
+        }
+    }
+}
+
 
         stage('Manual Approval for Staging') {
             when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
@@ -144,10 +165,10 @@ pipeline {
                     // Send email notification
                     emailext(
                         to: approvers,
-                        subject: "🚦 Approval Needed: Promote ${env.SERVICE_NAME} to Staging",
+                        subject: " Approval Needed: Promote ${env.SERVICE_NAME} to Staging",
                         body: """
                             <p>The build for <b>${env.SERVICE_NAME}</b> (commit <code>${env.COMMIT_SHA}</code>) passed in <b>dev</b>.</p>
-                            <p><b>Image:</b> ${env.IMAGE_FULL}</p>
+                            <p><b>Image:</b> ${env.image}</p>
                             <p>Click here to approve deployment: <a href="${env.BUILD_URL}input/">Approve</a></p>
                         """,
                         mimeType: 'text/html'
@@ -155,7 +176,7 @@ pipeline {
 
                     // Pause for approval in Jenkins UI
                     timeout(time: 2, unit: 'HOURS') {
-                        input message: "🚀 Approve deployment of ${env.IMAGE_FULL} to STAGING?", ok: "Deploy"
+                        input message: " Approve deployment of ${env.IMAGE_FULL} to STAGING?", ok: "Deploy"
                     }
                 }
             }
@@ -186,29 +207,28 @@ pipeline {
     }
 
     post {
-        success {
-            script {
-                def recipient = env.COMMIT_AUTHOR_EMAIL?.trim() ?: "kthacker862@gmail.com"
-                emailext(
-                    to: recipient,
-                    subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                    body: "<p>The commit to <b>${params.repo_name}</b> on branch <b>${params.branch_name}</b> built and deployed successfully!</p><p>Image: ${env.IMAGE_FULL}</p><p><a href='${env.BUILD_URL}'>Build Link</a></p>",
-                    mimeType: 'text/html',
-                    from: SMTP_CREDENTIALS_USR
-                )
-            }
-        }
-        failure {
-            script {
-                def recipient = env.COMMIT_AUTHOR_EMAIL?.trim() ?: "kthacker862@gmail.com"
-                emailext(
-                    to: recipient,
-                    subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                    body: "<p>The commit to <b>${params.repo_name}</b> on branch <b>${params.branch_name}</b> failed the build.</p><p><a href='${env.BUILD_URL}'>Build Link</a></p>",
-                    mimeType: 'text/html',
-                    from: SMTP_CREDENTIALS_USR
-                )
-            }
-        }
+    success {
+        githubNotify(
+          account: 'Amneal-pie',                              
+           repo: "${params.repo_name}",                              
+            sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
+            credentialsId: 'git-secret',                            
+           status: 'SUCCESS',                                         
+             context: 'CI/CD',
+            description: 'Build passed'
+         )
     }
+     failure {
+        githubNotify(
+            account: 'Amneal-pie',
+            repo: "${params.repo_name}",
+           sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
+           credentialsId: 'git-secret',
+             status: 'FAILURE',
+             context: 'CI/CD',
+             description: 'Build failed'
+         )
+     }
+ }
+
 }
