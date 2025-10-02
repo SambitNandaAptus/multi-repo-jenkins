@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent { docker {
+            image 'python:3.11-slim'
+            args '-u root:root'
+        }
+}
 
     parameters {
         string(name: 'repo_name', defaultValue: '', description: 'Service repository name (from webhook)')
