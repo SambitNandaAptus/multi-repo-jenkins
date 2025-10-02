@@ -98,27 +98,42 @@ pipeline {
         }
 
 
-        stage('Deploy to Dev') {
-            when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
-            steps {
-                sshagent(['ssh-deploy-key']) {
-                    withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        script {
-                            def scriptPath = "${env.META_REPO_DIR}/scripts/deploy_compose.sh"
-                            def server     = env.DEPLOY_SERVER
+              stage('Deploy Service') {
+           when {
+        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    }
+    steps {
+        sshagent(['ssh-deploy-key']) {
+            withCredentials([usernamePassword(credentialsId: 'docker-creds',
+                                              usernameVariable: 'DOCKER_USER',
+                                              passwordVariable: 'DOCKER_PASS')]) {
+                script {
+                    def server     = "192.168.1.235"
+                    def registry   = "docker.io"
+                    def image      = "aptusdatalabstech/${env.SERVICE_NAME}"
+                    def tag        = params.branch_name.replaceAll('refs/heads/', '')
+                    def scriptPath = "${env.META_REPO_DIR}/scripts/deploy_compose.sh"
 
-                            sh "scp -o StrictHostKeyChecking=no ${scriptPath} aptus@${server}:/tmp/deploy_compose.sh"
-                            sh """
-                                ssh -o StrictHostKeyChecking=no aptus@${server} '
-                                    chmod +x /tmp/deploy_compose.sh
-                                    /tmp/deploy_compose.sh "${server}" "${env.REGISTRY}" "${env.REGISTRY_NAMESPACE}/${env.SERVICE_NAME}" "${env.IMAGE_TAG}" "${DOCKER_USER}" "${DOCKER_PASS}"
-                                '
-                            """
-                        }
+                    if (!fileExists(scriptPath)) {
+                        error "Deploy script not found at ${scriptPath}"
                     }
+
+                    echo "[INFO] Copying deploy script to remote server..."
+                    sh "scp -o StrictHostKeyChecking=no ${scriptPath} aptus@${server}:/tmp/deploy_compose.sh"
+
+                    echo "[INFO] Running deploy script on remote server..."
+                    sh """
+                        ssh -o StrictHostKeyChecking=no aptus@${server} '
+                            chmod +x /tmp/deploy_compose.sh
+                            /tmp/deploy_compose.sh "${server}" "${registry}" "${image}" "${tag}" "${DOCKER_USER}" "${DOCKER_PASS}"
+                        '
+                    """
+                    echo "[INFO] Deployment finished successfully!"
                 }
             }
         }
+    }
+}
 
         stage('Manual Approval for Staging') {
             when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
