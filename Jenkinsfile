@@ -156,31 +156,92 @@ pipeline {
 }
 
 
-        stage('Manual Approval for Staging') {
-            when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
-            steps {
-                script {
-                    def approvers = "khushi.thacker@aptusdatalabs.com"
+        // stage('Manual Approval for Staging') {
+        //     when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
+        //     steps {
+        //         script {
+        //             def approvers = "khushi.thacker@aptusdatalabs.com"
                     
-                    // Send email notification
-                    emailext(
-                        to: approvers,
-                        subject: " Approval Needed: Promote ${env.SERVICE_NAME} to Staging",
-                        body: """
-                            <p>The build for <b>${env.SERVICE_NAME}</b> (commit <code>${env.COMMIT_SHA}</code>) passed in <b>dev</b>.</p>
-                            <p><b>Image:</b> ${env.image}</p>
-                            <p>Click here to approve deployment: <a href="${env.BUILD_URL}input/">Approve</a></p>
-                        """,
-                        mimeType: 'text/html'
-                    )
+        //             // Send email notification
+        //             emailext(
+        //                 to: approvers,
+        //                 subject: " Approval Needed: Promote ${env.SERVICE_NAME} to Staging",
+        //                 body: """
+        //                     <p>The build for <b>${env.SERVICE_NAME}</b> (commit <code>${env.COMMIT_SHA}</code>) passed in <b>dev</b>.</p>
+        //                     <p><b>Image:</b> ${env.image}</p>
+        //                     <p>Click here to approve deployment: <a href="${env.BUILD_URL}input/">Approve</a></p>
+        //                 """,
+        //                 mimeType: 'text/html'
+        //             )
 
-                    // Pause for approval in Jenkins UI
-                    timeout(time: 2, unit: 'HOURS') {
-                        input message: " Approve deployment of ${env.IMAGE_FULL} to STAGING?", ok: "Deploy"
+        //             // Pause for approval in Jenkins UI
+        //             timeout(time: 2, unit: 'HOURS') {
+        //                 input message: " Approve deployment of ${env.IMAGE_FULL} to STAGING?", ok: "Deploy"
+        //             }
+        //         }
+        //     }
+        // }
+        stage('Manual Approval & Deploy to Staging') {
+    when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
+    steps {
+        script {
+            try {
+                // Send approval email
+                def approvers = "khushi.thacker@aptusdatalabs.com"
+                emailext(
+                    to: approvers,
+                    subject: " Approval Needed: Promote ${env.SERVICE_NAME} to Staging",
+                    body: """
+                        <p>The build for <b>${env.SERVICE_NAME}</b> (commit <code>${env.COMMIT_SHA}</code>) passed in <b>dev</b>.</p>
+                        <p>Click to approve: <a href='${env.BUILD_URL}input/'>Approve</a></p>
+                    """,
+                    mimeType: 'text/html'
+                )
+
+                timeout(time: 2, unit: 'HOURS') {
+                    input message: "🚀 Approve deployment of ${env.IMAGE_FULL} to STAGING?", ok: "Deploy"
+                }
+
+                // Deploy to staging
+                sshagent(['ssh-deploy-key']) {
+                    withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        def stagingServer = "192.168.1.235"
+                        def scriptPath = "${env.META_REPO_DIR}/scripts/deploy_compose.sh"
+                        sh "scp -o StrictHostKeyChecking=no ${scriptPath} aptus@${stagingServer}:/tmp/deploy_compose.sh"
+                        sh """
+                            ssh -o StrictHostKeyChecking=no aptus@${stagingServer} '
+                                chmod +x /tmp/deploy_compose.sh
+                                /tmp/deploy_compose.sh "${stagingServer}" "${env.REGISTRY}" "${env.REGISTRY_NAMESPACE}/${env.SERVICE_NAME}" "${env.IMAGE_TAG}" "${DOCKER_USER}" "${DOCKER_PASS}"
+                            '
+                        """
                     }
                 }
+
+                // Notify staging success
+                emailext(
+                    to: "khushi.thacker@aptusdatalabs.com,${env.COMMIT_AUTHOR_EMAIL}",
+                    subject: "✅ Staging Deployment Success: ${env.SERVICE_NAME}",
+                    body: "<p>Image ${env.IMAGE_FULL} successfully deployed to STAGING.</p>",
+                    mimeType: 'text/html',
+                    from: SMTP_CREDENTIALS_USR
+                )
+
+            } catch(err) {
+                // Notify disapproval/failure
+                emailext(
+                    to: "staging-lead@company.com,${env.COMMIT_AUTHOR_EMAIL}",
+                    subject: "❌ Staging Deployment NOT Approved: ${env.SERVICE_NAME}",
+                    body: "<p>The deployment of ${env.IMAGE_FULL} to STAGING was aborted or disapproved.</p>",
+                    mimeType: 'text/html',
+                    from: SMTP_CREDENTIALS_USR
+                )
+                // Rethrow to mark the pipeline as aborted
+                throw err
             }
         }
+    }
+}
+
 
         // stage('Deploy to Staging') {
         //     when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
