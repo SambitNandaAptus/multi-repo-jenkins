@@ -235,7 +235,7 @@ pipeline {
             )
         }
     }
-}
+
     stage('Manual Approval for Staging') {
     when {
         expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
@@ -270,4 +270,5 @@ pipeline {
 
 
 
+}
 }
