@@ -1,9 +1,5 @@
 pipeline {
-    agent { docker {
-            image 'python:3.11-slim'
-            args '-u root:root'
-        }
-}
+    agent any
 
     parameters {
         string(name: 'repo_name', defaultValue: '', description: 'Service repository name (from webhook)')
@@ -157,41 +153,7 @@ pipeline {
             )
         }
     }
-}
-       stage('Setup Python') {
-    steps {
-        sh """
-            python3 -m pip install --user virtualenv
-            python3 -m ~/.local/bin/virtualenv ${WORKSPACE}/venv
-            source ${WORKSPACE}/venv/bin/activate
-            pip install --upgrade pip
-            pip install -r requirements.txt sphinx pandoc mkdocs
-        """
-    }
-}
-
-
-      stage('Generate User/Deployment Docs') {
-    steps {
-        script {
-            env.DOCS_DIR = "${env.WORKSPACE}/build/docs"
-            sh '''
-                mkdir -p ${DOCS_DIR}/markdown/html
-                mkdir -p ${DOCS_DIR}/markdown/pdf
-
-                # Activate Python virtual environment
-                source ${WORKSPACE}/venv/bin/activate
-
-                # Loop over markdown files
-                for f in ${env.META_REPO_DIR}/docs/markdown/*.md; do
-                    fname=$(basename "$f" .md)
-                    pandoc "$f" -s -o ${DOCS_DIR}/markdown/html/"$fname".html
-                    pandoc "$f" -o ${DOCS_DIR}/markdown/pdf/"$fname".pdf
-                done
-            '''
         }
-    }
-}
 
 
 
@@ -217,7 +179,6 @@ pipeline {
                     input message: " Approve deployment of ${env.IMAGE_FULL} to STAGING?", ok: "Deploy"
                 }
 
-                // Deploy to staging
                 sshagent(['ssh-deploy-key']) {
                     withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         def stagingServer = "192.168.1.235"
