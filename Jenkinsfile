@@ -75,23 +75,28 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
+       stage('Build Docker Image') {
+            when {
+        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    }
             steps {
                 script {
-                    env.IMAGE_TAG = env.COMMIT_SHA
-                    env.IMAGE_FULL = "${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.SERVICE_NAME}:${env.IMAGE_TAG}"
+                    def imageTag   = "${env.SERVICE_NAME}:${params.branch_name.replaceAll('refs/heads/', '').replaceAll('/', '-')}"
+                    def registry   = "docker.io"
                     def scriptPath = "${env.META_REPO_DIR}/scripts/build_and_push.sh"
 
-                    withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    withCredentials([usernamePassword(credentialsId: 'docker-creds',
+                                                      usernameVariable: 'DOCKER_USER',
+                                                      passwordVariable: 'DOCKER_PASS')]) {
                         sh """
                             chmod +x "${scriptPath}"
-                            "${scriptPath}" "${env.IMAGE_FULL}" "${env.REGISTRY}" "${DOCKER_USER}" "${DOCKER_PASS}"
+                            "${scriptPath}" "${imageTag}" "${registry}" "${DOCKER_USER}" "${DOCKER_PASS}"
                         """
                     }
                 }
             }
         }
+
 
         stage('Deploy to Dev') {
             when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
