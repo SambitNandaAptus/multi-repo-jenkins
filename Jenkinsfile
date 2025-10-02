@@ -154,6 +154,46 @@ pipeline {
         }
     }
 }
+        stage('Setup Python') {
+    steps {
+        sh """
+            python3 -m venv ${WORKSPACE}/venv
+            source ${WORKSPACE}/venv/bin/activate
+            pip install --upgrade pip
+            pip install sphinx pandoc mkdocs
+        """
+    }
+}
+
+        stage('Generate Documentation') {
+    steps {
+        script {
+            env.DOCS_DIR = "${env.WORKSPACE}/build/docs"
+            sh """
+                mkdir -p ${DOCS_DIR}/sphinx/html
+                mkdir -p ${DOCS_DIR}/sphinx/pdf
+                mkdir -p ${DOCS_DIR}/markdown/html
+                mkdir -p ${DOCS_DIR}/markdown/pdf
+
+                # Activate Python virtual environment
+                source ${env.WORKSPACE}/venv/bin/activate
+
+                # 1️⃣ Sphinx API docs
+                sphinx-build -b html ${env.META_REPO_DIR}/docs/sphinx ${DOCS_DIR}/sphinx/html
+                sphinx-build -b latex ${env.META_REPO_DIR}/docs/sphinx ${DOCS_DIR}/sphinx/pdf/latex
+                cd ${DOCS_DIR}/sphinx/pdf/latex && make all-pdf
+
+                # 2️⃣ Markdown guides (user/deployment guides)
+                for f in ${env.META_REPO_DIR}/docs/markdown/*.md; do
+                    fname=$(basename $f .md)
+                    pandoc $f -s -o ${DOCS_DIR}/markdown/html/$fname.html
+                    pandoc $f -o ${DOCS_DIR}/markdown/pdf/$fname.pdf
+                done
+            """
+        }
+    }
+}
+
 
 
         
