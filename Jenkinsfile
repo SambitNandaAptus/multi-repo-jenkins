@@ -1,5 +1,8 @@
 pipeline {
-    agent any
+   agent {
+        label 'any'
+        customWorkspace '/var/jenkins_home/workspace/All-services-test-new'
+    }
     options {
     skipDefaultCheckout(true)
 }
