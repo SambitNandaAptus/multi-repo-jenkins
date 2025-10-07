@@ -89,13 +89,14 @@ stage('Debug Service Repo Checkout') {
     
     script {
       sh """
-                python3 -m pip install --upgrade pip
-                python3 -m pip install -r requirements.txt
-                python3 -m pip install pytest pytest-cov
-
-                # Run tests
-                mkdir -p reports
-                pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+             python3 -m venv venv
+    source venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    pip install pytest pytest-cov
+    mkdir -p reports
+    pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml    
+                
       """
       junit "/workspace/reports/test-results.xml"
     }
