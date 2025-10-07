@@ -100,7 +100,7 @@ stage('Debug Service Repo Checkout') {
     pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml    
                 
       """
-      junit "/workspace/reports/test-results.xml"
+      junit "service-repo/reports/test-results.xml"
     }
   }
 }
