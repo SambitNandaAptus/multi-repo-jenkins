@@ -1,5 +1,5 @@
 pipeline {
-   agent any
+    agent any
     options {
     skipDefaultCheckout(true)
 }
@@ -27,7 +27,6 @@ pipeline {
                 }
             }
         }
-       
 
         stage('Determine Service') {
             steps {
@@ -46,69 +45,50 @@ pipeline {
             }
         }
 
-//         stage('Checkout Service Repo') {
-//     steps {
-//         dir("${env.WORKSPACE}/service-repo") {
-//             script {
-//                 echo "Cloning from URL: ${env.REPO_URL}"
+        stage('Checkout Service Repo') {
+    steps {
+        dir("${env.WORKSPACE}/service-repo") {
+            script {
+                echo "Cloning from URL: ${env.REPO_URL}"
 
-//                 def branch = params.branch_name.replace('refs/heads/', '')
-//                 git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
-//                 echo "Workspace = ${env.WORKSPACE}"
-//             }
-//         }
-//     }
-// }
-// stage('Debug Service Repo Checkout') {
-//     steps {
-//         script {
-//             echo "Debugging service-repo contents"
-//             sh """
-//                 echo Current path: \$(pwd)
-//                 ls -lah ${env.WORKSPACE}/service-repo
-//                 echo "Git status inside service-repo (if any):"
-//                 cd ${env.WORKSPACE}/service-repo || echo "service-repo dir not found"
-//                 git status || echo "No git repo present here"
-//             """
-//         }
-//     }
-// }
-
-
-
-//         stage('Get Commit Info') {
-//             steps {
-//                 script {
-//                     env.COMMIT_SHA = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-//                     env.COMMIT_AUTHOR_EMAIL = sh(script: "git log -1 --pretty=format:'%ae'", returnStdout: true).trim()
-//                 }
-//             }
-//         }
-      stage('Run Unit Tests in Docker') {
-    agent {
-        docker {
-            image 'python:3.10-bullseye'
-            args "-u 1000:1000"
+                def branch = params.branch_name.replace('refs/heads/', '')
+                git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
+                echo "Workspace = ${env.WORKSPACE}"
+            }
         }
     }
+}
+stage('Debug Service Repo Checkout') {
     steps {
-       
-        
-        // Checkout the service repo properly
-        checkout([$class: 'GitSCM',
-            branches: [[name: params.branch_name.replace('refs/heads/', '')]],
-            userRemoteConfigs: [[
-                url: env.REPO_URL,
-                credentialsId: 'git-secret'
-            ]]
-        ])
-        
         script {
+            echo "Debugging service-repo contents"
             sh """
-                
-                cd ${env.WORKSPACE}
-                
-                # Install Python dependencies
+                echo Current path: \$(pwd)
+                ls -lah ${env.WORKSPACE}/service-repo
+                echo "Git status inside service-repo (if any):"
+                cd ${env.WORKSPACE}/service-repo || echo "service-repo dir not found"
+                git status || echo "No git repo present here"
+            """
+        }
+    }
+}
+
+
+
+        stage('Get Commit Info') {
+            steps {
+                script {
+                    env.COMMIT_SHA = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    env.COMMIT_AUTHOR_EMAIL = sh(script: "git log -1 --pretty=format:'%ae'", returnStdout: true).trim()
+                }
+            }
+        }
+       stage('Run Unit Tests in Docker') {
+  
+  steps {
+    
+    script {
+      sh """
                 python3 -m pip install --upgrade pip
                 python3 -m pip install -r requirements.txt
                 python3 -m pip install pytest pytest-cov
@@ -116,14 +96,11 @@ pipeline {
                 # Run tests
                 mkdir -p reports
                 pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-            """
-        }
-        
-        
-        junit "reports/test-results.xml"
+      """
+      junit "/workspace/reports/test-results.xml"
     }
+  }
 }
-
 
 
 
