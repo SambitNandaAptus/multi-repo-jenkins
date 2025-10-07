@@ -78,7 +78,7 @@ pipeline {
                 ./venv/bin/pip install --upgrade pip --no-cache-dir
                 ./venv/bin/pip install --no-cache-dir pytest pytest-cov
                 mkdir -p reports
-                ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+                ./venv/bin/pytest tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
             """
 
             junit "service-repo/reports/test-results.xml"
