@@ -87,14 +87,16 @@ stage('Debug Service Repo Checkout') {
   agent {
     docker {
       image 'python:3.10-bullseye'
-      args "-u 1000:1000 -v /var/jenkins_home/workspace/All-services-test/service-repo:/workspace -w /workspace"
+      args "-u 1000:1000"
     }
   }
   steps {
-    deleteDir()
+    
     script {
       sh """
         echo "PWD inside Docker: \$(pwd)"
+        cd service-repo
+        ls app
         ls -lah        # this is /workspace
         ls -lah app    # this works now because app is inside /workspace
 
