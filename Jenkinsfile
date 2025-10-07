@@ -91,25 +91,24 @@ stage('Debug Service Repo Checkout') {
     }
   }
   steps {
-    
-    script {
-      sh """
-        echo "PWD inside Docker: \$(pwd)"
-        cd service-repo
-        ls app
-        ls -lah        # this is /workspace
-        ls -lah app    # this works now because app is inside /workspace
+    checkout([$class: 'GitSCM',
+              branches: [[name: params.branch_name.replace('refs/heads/', '')]],
+              userRemoteConfigs: [[url: env.REPO_URL, credentialsId: 'git-secret']]])
+    sh """
+      pwd
+      ls -lah
+      ls -lah app
 
-        python3 -m venv venv
-        ./venv/bin/pip install --upgrade pip
-        ./venv/bin/pip install pytest pytest-cov
-        mkdir -p reports
-        ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-      """
-      junit "/workspace/reports/test-results.xml"
-    }
+      python3 -m venv venv
+      ./venv/bin/pip install --upgrade pip
+      ./venv/bin/pip install pytest pytest-cov
+      mkdir -p reports
+      ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+    """
+    junit "reports/test-results.xml"
   }
 }
+
 
 
 
