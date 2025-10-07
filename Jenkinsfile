@@ -70,18 +70,13 @@ pipeline {
         }
     }
     steps {
-        dir("/workspace") { 
+        dir("/workspace") {
             script {
                 sh """
-                    # Clone the branch inside the container
                     git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} .
-                    
-                    # Create virtual environment
                     python3 -m venv venv
                     ./venv/bin/pip install --upgrade pip --no-cache-dir
                     ./venv/bin/pip install --no-cache-dir pytest pytest-cov
-                    
-                    # Run tests
                     mkdir -p reports
                     ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
                 """
