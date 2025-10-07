@@ -334,6 +334,16 @@ stage('Debug Service Repo Checkout') {
              context: 'CI/CD',
              description: 'Build failed'
          )
+         emailext(
+        to: "${env.COMMIT_AUTHOR_EMAIL}",
+        subject: "❌ Dev Deployment FAILED: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}",
+        body: """
+          <p>Hi,</p>
+          <p>The build <b>#${env.BUILD_NUMBER}</b> failed due to a Quality Gate error.</p>
+          <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
+        """,
+        mimeType: 'text/html'
+      )
      }
  }
 
