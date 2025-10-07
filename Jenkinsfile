@@ -75,9 +75,6 @@ pipeline {
 
             
             sh """
-                git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} service
-                cd service
-                ls -R
                 python3 -m venv venv
                 ./venv/bin/pip install --upgrade pip --no-cache-dir
              
