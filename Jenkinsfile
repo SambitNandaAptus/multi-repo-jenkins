@@ -92,7 +92,7 @@ pipeline {
   }
   steps {
     script {
-      // Checkout inside container
+      
       checkout([$class: 'GitSCM',
                 branches: [[name: params.branch_name.replace('refs/heads/', '')]],
                 userRemoteConfigs: [[url: env.REPO_URL, credentialsId: 'git-secret']]])
