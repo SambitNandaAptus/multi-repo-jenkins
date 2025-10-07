@@ -27,11 +27,7 @@ pipeline {
                 }
             }
         }
-        stage('Cleanup') {
-            steps {
-                deleteDir() 
-            }
-        }
+       
 
         stage('Determine Service') {
             steps {
