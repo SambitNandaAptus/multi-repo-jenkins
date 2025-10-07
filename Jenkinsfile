@@ -58,6 +58,24 @@ pipeline {
                 }
             }
         }
+        stage('Run Unit Tests') {
+    agent {
+        docker {
+            image 'python:3.10' 
+            args '-v $WORKSPACE:/app -w /app'
+        }
+    }
+    steps {
+        script {
+            sh """
+                pip install -r requirements.txt
+                pytest --junitxml=reports/test-results.xml --cov=. --cov-report=xml
+            """
+        }
+        junit 'reports/test-results.xml'
+    }
+}
+
 
         stage('SonarQube Analysis') {
             when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
