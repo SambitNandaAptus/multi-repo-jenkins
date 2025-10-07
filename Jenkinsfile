@@ -66,40 +66,32 @@ pipeline {
     agent {
         docker {
             image 'python:3.10'
-            args "-u 0" // run as root to avoid permission issues
+            args "-u 0"
         }
     }
     steps {
         script {
-            // List workspace content for debugging
-            sh "ls -R ${env.WORKSPACE}"
+            dir("/app") {
+                
+                git branch: "${params.branch_name.replace('refs/heads/', '')}", 
+                    url: "${env.REPO_URL}", 
+                    credentialsId: 'git-secret'
 
-            // Run tests inside service-repo folder
-            dir("${env.WORKSPACE}/service-repo") {
-                // Ensure reports directory exists
-                sh "mkdir -p reports"
+                sh "ls -R /app"  
 
-                // Setup Python virtual environment and install pytest + pytest-cov
                 sh """
                     python3 -m venv venv
                     ./venv/bin/pip install --upgrade pip --no-cache-dir
                     ./venv/bin/pip install --no-cache-dir pytest pytest-cov
-                """
-
-                // Run pytest with coverage, output JUnit XML for Jenkins
-                sh """
-                    ./venv/bin/pytest app/tests \
-                        --junitxml=reports/test-results.xml \
-                        --cov=app \
-                        --cov-report=xml
+                    mkdir -p reports
+                    ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
                 """
             }
-
-            // Publish JUnit test results to Jenkins
-            junit "${env.WORKSPACE}/service-repo/reports/test-results.xml"
+            junit "/app/reports/test-results.xml"
         }
     }
 }
+
 
 
         stage('SonarQube Analysis') {
