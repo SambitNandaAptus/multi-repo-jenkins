@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.10'
+            args "-u 0"
+        }
+    }
 
     parameters {
         string(name: 'repo_name', defaultValue: '', description: 'Service repository name (from webhook)')
@@ -62,18 +67,9 @@ pipeline {
                 }
             }
         }
-       stage('Run Unit Tests in Docker') {
-    agent {
-        docker {
-            image 'python:3.10'
-            args "-u 0"
-        }
-    }
-    steps {
-        dir("/workspace") {
-            script {
+       stage('Run Unit Tests') {
+            steps {
                 sh """
-                    git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} .
                     python3 -m venv venv
                     ./venv/bin/pip install --upgrade pip --no-cache-dir
                     ./venv/bin/pip install --no-cache-dir pytest pytest-cov
@@ -83,8 +79,7 @@ pipeline {
                 junit "reports/test-results.xml"
             }
         }
-    }
-}
+    
 
 
        stage('SonarQube Analysis') {
