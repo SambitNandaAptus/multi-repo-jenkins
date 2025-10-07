@@ -1,11 +1,5 @@
 pipeline {
-    agent {
-    docker {
-        image 'python:3.10-bullseye'
-        args "-u 1000:1000"
-    }
-}
-
+    agent any
     parameters {
         string(name: 'repo_name', defaultValue: '', description: 'Service repository name (from webhook)')
         string(name: 'branch_name', defaultValue: '', description: 'Branch name (from webhook)')
