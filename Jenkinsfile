@@ -95,6 +95,7 @@ stage('Debug Service Repo Checkout') {
     pip install --upgrade pip
     pip install pytest pytest-cov
     mkdir -p reports
+    pwd
     pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml    
                 
       """
