@@ -64,9 +64,9 @@ stage('Debug Service Repo Checkout') {
             echo "Debugging service-repo contents"
             sh """
                 echo Current path: \$(pwd)
-                ls -lah ${env.WORKSPACE}/service-repo
+                ls -lah ${env.WORKSPACE}
                 echo "Git status inside service-repo (if any):"
-                cd ${env.WORKSPACE}/service-repo || echo "service-repo dir not found"
+                cd ${env.WORKSPACE} || echo "service-repo dir not found"
                 git status || echo "No git repo present here"
             """
         }
