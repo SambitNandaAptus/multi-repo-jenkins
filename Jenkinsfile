@@ -67,21 +67,26 @@ pipeline {
     }
     steps {
         script {
-          
+         
             sh "ls -R /app"
 
             
             sh """
                 python3 -m venv venv
-                ./venv/bin/pip install --upgrade pip
-                ./venv/bin/pip install -r  pytest pytest-cov
-                ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+                ./venv/bin/pip install --upgrade pip --no-cache-dir
+             
+                ./venv/bin/pip install --no-cache-dir pytest pytest-cov
+
+               
+                ./venv/bin/pytest app/test --junitxml=reports/test-results.xml --cov=app --cov-report=xml
             """
         }
 
+      
         junit 'reports/test-results.xml'
     }
 }
+
 
 
 
