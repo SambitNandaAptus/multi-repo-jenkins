@@ -70,7 +70,7 @@ pipeline {
             sh """
                 python3 -m venv venv
                . venv/bin/activate
-                pip install pytest
+                pip install pytest  pytest-cov
                 pytest --junitxml=reports/test-results.xml --cov=. --cov-report=xml
             """
         }
