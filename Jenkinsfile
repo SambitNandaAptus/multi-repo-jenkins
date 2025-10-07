@@ -66,28 +66,25 @@ pipeline {
     agent {
         docker {
             image 'python:3.10'
-            args "-u 0 -v ${env.WORKSPACE}/service-repo:/app -w /app"
+            args "-u 0 -v ${env.WORKSPACE}:/workspace -w /workspace"
         }
     }
     steps {
         script {
-            sh "ls -R /app"  
-
-            sh """
-                python3 -m venv venv
-                ./venv/bin/pip install --upgrade pip --no-cache-dir
-                ./venv/bin/pip install --no-cache-dir pytest pytest-cov
-                mkdir -p reports
-                ./venv/bin/pytest tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-            """
-
+            dir("service-repo") {
+                sh """
+                    python3 -m venv venv
+                    ./venv/bin/pip install --upgrade pip --no-cache-dir
+                    ./venv/bin/pip install --no-cache-dir pytest pytest-cov
+                    mkdir -p reports
+                    ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+                """
+            }
             junit "service-repo/reports/test-results.xml"
         }
     }
 }
-
-
-        stage('SonarQube Analysis') {
+       stage('SonarQube Analysis') {
             when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
             steps {
                 withSonarQubeEnv('SonarServer') {
