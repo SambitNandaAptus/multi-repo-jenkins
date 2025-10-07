@@ -91,21 +91,24 @@ stage('Debug Service Repo Checkout') {
     }
   }
   steps {
-    checkout([$class: 'GitSCM',
-              branches: [[name: params.branch_name.replace('refs/heads/', '')]],
-              userRemoteConfigs: [[url: env.REPO_URL, credentialsId: 'git-secret']]])
-    sh """
-      pwd
-      ls -lah
-      ls -lah app
+    script {
+      // Checkout inside container
+      checkout([$class: 'GitSCM',
+                branches: [[name: params.branch_name.replace('refs/heads/', '')]],
+                userRemoteConfigs: [[url: env.REPO_URL, credentialsId: 'git-secret']]])
+      
+      sh """
+        echo "PWD inside Docker: \$(pwd)"
+        ls -lah
 
-      python3 -m venv venv
-      ./venv/bin/pip install --upgrade pip
-      ./venv/bin/pip install pytest pytest-cov
-      mkdir -p reports
-      ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-    """
-    junit "reports/test-results.xml"
+        python3 -m venv venv
+        ./venv/bin/pip install --upgrade pip
+        ./venv/bin/pip install pytest pytest-cov
+        mkdir -p reports
+        ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+      """
+      junit "reports/test-results.xml"
+    }
   }
 }
 
