@@ -73,7 +73,7 @@ pipeline {
         script {
             dir("service-repo") {
                 sh """
-                   ls -R /app
+                   ls -R /workspace
 
                     python3 -m venv venv
                     ./venv/bin/pip install --upgrade pip --no-cache-dir
