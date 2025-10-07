@@ -1,10 +1,10 @@
 pipeline {
     agent {
-        docker {
-            image 'python:3.10-slim'
-             args "-u 1000:1000"
-        }
+    docker {
+        image 'python:3.10-bullseye'
+        args "-u 0"
     }
+}
 
     parameters {
         string(name: 'repo_name', defaultValue: '', description: 'Service repository name (from webhook)')
@@ -67,8 +67,11 @@ pipeline {
                 }
             }
         }
-       stage('Run Unit Tests') {
-            steps {
+       stage('Run Unit Tests in Docker') {
+    
+    steps {
+        
+            script {
                 sh """
                     python3 -m venv venv
                     ./venv/bin/pip install --upgrade pip --no-cache-dir
@@ -78,8 +81,9 @@ pipeline {
                 """
                 junit "reports/test-results.xml"
             }
-        }
-    
+        
+    }
+}
 
 
        stage('SonarQube Analysis') {
