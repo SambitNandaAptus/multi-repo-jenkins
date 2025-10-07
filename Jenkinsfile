@@ -87,7 +87,8 @@ stage('Debug Service Repo Checkout') {
   agent {
     docker {
       image 'python:3.10-bullseye'
-      args "-u 1000:1000 -v ${env.WORKSPACE}/service-repo:/workspace -w /workspace"
+      args "-u 1000:1000 -v $PWD/service-repo:/workspace -w /workspace"
+
     }
   }
   steps {
