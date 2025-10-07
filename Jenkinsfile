@@ -73,8 +73,9 @@ pipeline {
         script {
             // Clone inside container
             sh """
-                git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} .
-                ls -R .
+                git fetch origin ${params.branch_name.replace('refs/heads/', '')}
+               git checkout -f ${params.branch_name.replace('refs/heads/', '')}
+                ls -R
                 
                 python3 -m venv venv
                 ./venv/bin/pip install --upgrade pip --no-cache-dir
