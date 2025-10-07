@@ -71,6 +71,10 @@ pipeline {
     }
     steps {
         script {
+            // Debug: check folder structure
+            sh "ls -R /workspace"
+
+            // Create virtualenv and install dependencies
             sh """
                 python3 -m venv venv
                 ./venv/bin/pip install --upgrade pip --no-cache-dir
@@ -82,7 +86,6 @@ pipeline {
         }
     }
 }
-
 
 
        stage('SonarQube Analysis') {
