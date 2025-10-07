@@ -118,7 +118,6 @@ stage('Debug Service Repo Checkout') {
                         sh """
                             ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=${env.SERVICE_NAME} \
-                            -Dsonar.branch.name=${params.branch_name.replace('refs/heads/', '')} \
                             -Dsonar.sources=. \
                             -Dsonar.python.coverage.reportPaths=coverage.xml
                         """
