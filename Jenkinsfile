@@ -73,11 +73,10 @@ pipeline {
         
             script {
                 sh """
-                    python3 -m venv venv
-                    ./venv/bin/pip install --upgrade pip --no-cache-dir
-                    ./venv/bin/pip install --no-cache-dir pytest pytest-cov
-                    mkdir -p reports
-                    ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+                     python3 -m pip install --upgrade pip
+                    python3 -m pip install pytest pytest-cov
+                    pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+
                 """
                 junit "reports/test-results.xml"
             }
