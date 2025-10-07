@@ -62,12 +62,12 @@ pipeline {
     agent {
         docker {
             image 'python:3.10'
-            args '-v $WORKSPACE:/app -w /app'
+            // args '-v $WORKSPACE:/app -w /app'
         }
     }
     steps {
         script {
-         
+            checkout scm  
             sh "ls -R /app"
 
             
