@@ -94,9 +94,9 @@ pipeline {
     steps {
         script {
             sh """
-                apt-get update && apt-get install -y git
-                git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} service-repo
-                cd service-repo
+                
+                git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} service
+                cd service
                 python3 -m pip install --upgrade pip
                 python3 -m pip install -r requirements.txt
                 python3 -m pip install pytest pytest-cov
