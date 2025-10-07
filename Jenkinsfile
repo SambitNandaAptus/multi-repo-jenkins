@@ -61,7 +61,7 @@ pipeline {
 stage('Debug Service Repo Checkout') {
     steps {
         script {
-            echo "=== Debugging service-repo contents ==="
+            echo "Debugging service-repo contents"
             sh """
                 echo Current path: \$(pwd)
                 ls -lah ${env.WORKSPACE}/service-repo
@@ -95,10 +95,11 @@ stage('Debug Service Repo Checkout') {
   steps {
     script {
       sh """
-        echo "=== Checking contents ==="
+        echo " Checking contents"
         pwd
         ls -lah
-        ls -lah app
+        ls -lah /workspace/app
+
 
         python3 -m venv venv
         ./venv/bin/pip install --upgrade pip
