@@ -73,7 +73,7 @@ pipeline {
         script {
             // Clone inside container
             sh """
-               git config --global --add safe.directory ${env.WORKSPACE}/service-repo
+               git config --global --add safe.directory $WORKSPACE
                 git fetch origin ${params.branch_name.replace('refs/heads/', '')}
                git checkout -f ${params.branch_name.replace('refs/heads/', '')}
                 ls -R
