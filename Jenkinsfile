@@ -87,13 +87,14 @@ stage('Debug Service Repo Checkout') {
   agent {
     docker {
       image 'python:3.10-bullseye'
-      args "-u 1000:1000 -v ${env.WORKSPACE}/service-repo:/workspace -w /workspace"
+      args "-u 1000:1000 -v /var/jenkins_home/workspace/All-services-test/service-repo:/workspace -w /workspace"
     }
   }
   steps {
     script {
       dir("${env.WORKSPACE}/service-repo") {
         echo "Checking contents inside service-repo"
+        echo "Workspace = ${env.WORKSPACE}"
         sh """
           pwd
           ls -lah
