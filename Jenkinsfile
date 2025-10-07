@@ -66,15 +66,12 @@ pipeline {
     agent {
         docker {
             image 'python:3.10'
-            args "-u 0 -v ${env.WORKSPACE}:/workspace -w /workspace/service-repo"
+            args "-u 0 -v ${env.WORKSPACE}/service-repo:/workspace -w /workspace"
         }
     }
     steps {
         script {
-            // Clone inside container
             sh """
-            git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} /works
-            cd /works
                 python3 -m venv venv
                 ./venv/bin/pip install --upgrade pip --no-cache-dir
                 ./venv/bin/pip install --no-cache-dir pytest pytest-cov
@@ -85,6 +82,7 @@ pipeline {
         }
     }
 }
+
 
 
        stage('SonarQube Analysis') {
