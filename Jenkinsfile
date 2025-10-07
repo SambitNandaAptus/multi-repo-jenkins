@@ -44,6 +44,8 @@ pipeline {
     steps {
         dir("${env.WORKSPACE}/service-repo") {
             script {
+                echo "Cloning from URL: ${env.REPO_URL}"
+
                 def branch = params.branch_name.replace('refs/heads/', '')
                 git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
                 echo "Workspace = ${env.WORKSPACE}"
