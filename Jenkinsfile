@@ -58,7 +58,7 @@ pipeline {
                 }
             }
         }
-        stage('Run Unit Tests') {
+       stage('Run Unit Tests') {
     agent {
         docker {
             image 'python:3.10'
@@ -66,17 +66,20 @@ pipeline {
         }
     }
     steps {
-        sh "ls -R /app"
-    }        
-    steps {
         script {
+            // Debug: list files inside container
+            sh "ls -R /app"
+
+            // Run tests inside virtual environment
             sh """
                 python3 -m venv venv
                 ./venv/bin/pip install --upgrade pip
-                ./venv/bin/pip install pytest pytest-cov
-                ./venv/bin/pytest /tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+                ./venv/bin/pip install -r requirements.txt pytest pytest-cov
+                ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
             """
         }
+
+        // Publish test results to Jenkins
         junit 'reports/test-results.xml'
     }
 }
