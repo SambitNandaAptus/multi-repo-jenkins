@@ -92,8 +92,7 @@ pipeline {
         }
     }
     steps {
-        // Clean workspace before cloning
-        deleteDir()
+       
         
         // Checkout the service repo properly
         checkout([$class: 'GitSCM',
