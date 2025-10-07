@@ -101,9 +101,8 @@ pipeline {
         echo "PWD inside Docker: \$(pwd)"
         ls -lah
 
-        python3 -m venv venv
-        ./venv/bin/pip install --upgrade pip
-        ./venv/bin/pip install pytest pytest-cov
+        python3 -m pip install --upgrade pip
+        python3 -m pip install pytest pytest-cov
         mkdir -p reports
         ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
       """
