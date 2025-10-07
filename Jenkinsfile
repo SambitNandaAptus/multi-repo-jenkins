@@ -84,7 +84,7 @@ stage('Debug Service Repo Checkout') {
             }
         }
        stage('Run Unit Tests in Docker') {
-  
+       when { expression { return env.SERVICE_NAME != 'pie-ui' } }
   steps {
     
     script {
@@ -117,7 +117,8 @@ stage('Debug Service Repo Checkout') {
                         def scannerHome = tool 'sonar-scanner'
                         sh """
                             ${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=${env.SERVICE_NAME}-${env.COMMIT_SHA} \
+                            -Dsonar.projectKey=${env.SERVICE_NAME} \
+                            -Dsonar.branch.name=${params.branch_name.replace('refs/heads/', '')} \
                             -Dsonar.sources=. \
                             -Dsonar.python.coverage.reportPaths=coverage.xml
                         """
