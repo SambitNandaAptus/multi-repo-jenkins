@@ -73,8 +73,9 @@ pipeline {
         
             script {
                 sh """
-                     python3 -m pip install --upgrade pip
-                    python3 -m pip install pytest pytest-cov
+                     python3 -m pip install --upgrade --user pip
+                    python3 -m pip install --user pytest pytest-cov
+                    export PATH=$HOME/.local/bin:$PATH
                     pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
 
                 """
