@@ -47,6 +47,7 @@ pipeline {
             script {
                 def branch = params.branch_name.replace('refs/heads/', '')
                 git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
+                echo "Workspace = ${env.WORKSPACE}"
             }
         }
     }
@@ -69,10 +70,11 @@ pipeline {
         }
     }
     steps {
+        
         script {
              
             sh "ls -R /app"
-
+        
             
             sh """
                 python3 -m venv venv
