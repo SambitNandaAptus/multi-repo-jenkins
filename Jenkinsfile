@@ -66,23 +66,27 @@ pipeline {
     agent {
         docker {
             image 'python:3.10'
-            args "-u 0 -v ${env.WORKSPACE}/service-repo:/workspace -w /workspace"
+            args "-u 0"
         }
     }
     steps {
-        script {
-            // Debug: check folder structure
-            sh "ls -R /workspace"
-
-            // Create virtualenv and install dependencies
-            sh """
-                python3 -m venv venv
-                ./venv/bin/pip install --upgrade pip --no-cache-dir
-                ./venv/bin/pip install --no-cache-dir pytest pytest-cov
-                mkdir -p reports
-                ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-            """
-            junit "reports/test-results.xml"
+        dir("/workspace") { 
+            script {
+                sh """
+                    # Clone the branch inside the container
+                    git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} .
+                    
+                    # Create virtual environment
+                    python3 -m venv venv
+                    ./venv/bin/pip install --upgrade pip --no-cache-dir
+                    ./venv/bin/pip install --no-cache-dir pytest pytest-cov
+                    
+                    # Run tests
+                    mkdir -p reports
+                    ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+                """
+                junit "reports/test-results.xml"
+            }
         }
     }
 }
