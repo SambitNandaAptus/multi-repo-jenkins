@@ -47,7 +47,7 @@ pipeline {
 
         stage('Checkout Service Repo') {
     steps {
-        dir("${env.WORKSPACE}/service-repo") {
+        dir("${env.WORKSPACE}") {
             script {
                 echo "Cloning from URL: ${env.REPO_URL}"
 
@@ -96,11 +96,12 @@ stage('Debug Service Repo Checkout') {
     pip install pytest pytest-cov
     mkdir -p reports
     pwd
-    cd service-repo
+    
     pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml    
-                
+              
       """
       junit "service-repo/reports/test-results.xml"
+      
     }
   }
 }
