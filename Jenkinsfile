@@ -98,7 +98,7 @@ stage('Debug Service Repo Checkout') {
         echo "=== Checking contents ==="
         pwd
         ls -lah
-l       ls -lah app
+        ls -lah app
 
         python3 -m venv venv
         ./venv/bin/pip install --upgrade pip
