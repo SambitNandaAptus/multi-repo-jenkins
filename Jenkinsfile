@@ -71,6 +71,14 @@ pipeline {
     steps {
         script {
             sh """
+                 echo '=== Current working directory ==='
+    pwd
+
+    echo '=== Who am I? ==='
+    id
+
+    echo '=== Directory tree ==='
+    ls -R /workspace
                 python3 -m venv venv
                 ./venv/bin/pip install --upgrade pip
                 ./venv/bin/pip install pytest pytest-cov
