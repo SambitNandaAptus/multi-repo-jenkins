@@ -71,13 +71,13 @@ pipeline {
     }
     steps {
         script {
-            dir("/app") {
+            dir("/app/service") {
                 
                 git branch: "${params.branch_name.replace('refs/heads/', '')}", 
                     url: "${env.REPO_URL}", 
                     credentialsId: 'git-secret'
 
-                sh "ls -R /app"  
+                sh "ls -R /app/service"  
 
                 sh """
                     python3 -m venv venv
