@@ -73,7 +73,7 @@ pipeline {
         script {
             // Clone inside container
             sh """
-            git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} /workspace
+            git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} /works
             cd /workspace
                 python3 -m venv venv
                 ./venv/bin/pip install --upgrade pip --no-cache-dir
