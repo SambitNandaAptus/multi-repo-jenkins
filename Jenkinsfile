@@ -1,9 +1,14 @@
 pipeline {
     agent any
+    options {
+    skipDefaultCheckout(true)
+}
+
     parameters {
         string(name: 'repo_name', defaultValue: '', description: 'Service repository name (from webhook)')
         string(name: 'branch_name', defaultValue: '', description: 'Branch name (from webhook)')
     }
+    
 
     environment {
         SONAR_TOKEN       = credentials('sonar-token')
