@@ -1,8 +1,5 @@
 pipeline {
-   agent {
-        label 'any'
-        customWorkspace '/var/jenkins_home/workspace/All-services-test-new'
-    }
+   agent any
     options {
     skipDefaultCheckout(true)
 }
@@ -88,31 +85,27 @@ pipeline {
 //             }
 //         }
        stage('Run Unit Tests in Docker') {
-  agent {
-    docker {
-      image 'python:3.10-bullseye'
-      args "-u 1000:1000"
+    agent {
+        docker {
+            image 'python:3.10-bullseye'
+            args "-u 1000:1000"
+        }
     }
-  }
-  steps {
-    script {
-      
-      checkout([$class: 'GitSCM',
-                branches: [[name: params.branch_name.replace('refs/heads/', '')]],
-                userRemoteConfigs: [[url: env.REPO_URL, credentialsId: 'git-secret']]])
-      
-      sh """
-        echo "PWD inside Docker: \$(pwd)"
-        ls -lah
-
-        python3 -m pip install --upgrade pip
-        python3 -m pip install pytest pytest-cov
-        mkdir -p reports
-        ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-      """
-      junit "reports/test-results.xml"
+    steps {
+        script {
+            sh """
+                apt-get update && apt-get install -y git
+                git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} service-repo
+                cd service-repo
+                python3 -m pip install --upgrade pip
+                python3 -m pip install -r requirements.txt
+                python3 -m pip install pytest pytest-cov
+                mkdir -p reports
+                pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+            """
+            junit "service-repo/reports/test-results.xml"
+        }
     }
-  }
 }
 
 
