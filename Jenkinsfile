@@ -68,6 +68,8 @@ pipeline {
     steps {
         script {
             sh """
+                python3 -m venv venv
+               . venv/bin/activate
                 pip install pytest
                 pytest --junitxml=reports/test-results.xml --cov=. --cov-report=xml
             """
