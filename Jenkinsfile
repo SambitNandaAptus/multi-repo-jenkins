@@ -68,22 +68,26 @@ pipeline {
             }
         }
        stage('Run Unit Tests in Docker') {
-    
+    agent {
+        docker {
+            image 'python:3.10-bullseye'
+            args "-u 1000:1000 -w /workspace"
+        }
+    }
     steps {
-        
-            script {
-                sh """
-                     python3 -m pip install --upgrade --user pip
-                    python3 -m pip install --user pytest pytest-cov
-                    export PATH=$HOME/.local/bin:$PATH
-                    pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-
-                """
-                junit "reports/test-results.xml"
-            }
-        
+        script {
+            sh """
+                python3 -m venv venv
+                ./venv/bin/pip install --upgrade pip
+                ./venv/bin/pip install pytest pytest-cov
+                mkdir -p reports
+                ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+            """
+            junit "reports/test-results.xml"
+        }
     }
 }
+
 
 
        stage('SonarQube Analysis') {
