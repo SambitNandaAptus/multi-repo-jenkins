@@ -73,6 +73,8 @@ pipeline {
         script {
             dir("service-repo") {
                 sh """
+                   ls -R /app
+
                     python3 -m venv venv
                     ./venv/bin/pip install --upgrade pip --no-cache-dir
                     ./venv/bin/pip install --no-cache-dir pytest pytest-cov
