@@ -75,14 +75,14 @@ stage('Debug Service Repo Checkout') {
 
 
 
-        // stage('Get Commit Info') {
-        //     steps {
-        //         script {
-        //             env.COMMIT_SHA = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-        //             env.COMMIT_AUTHOR_EMAIL = sh(script: "git log -1 --pretty=format:'%ae'", returnStdout: true).trim()
-        //         }
-        //     }
-        // }
+        stage('Get Commit Info') {
+            steps {
+                script {
+                    env.COMMIT_SHA = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    env.COMMIT_AUTHOR_EMAIL = sh(script: "git log -1 --pretty=format:'%ae'", returnStdout: true).trim()
+                }
+            }
+        }
        stage('Run Unit Tests in Docker') {
   
   steps {
@@ -199,25 +199,32 @@ stage('Debug Service Repo Checkout') {
         }
     }
 }
-        stage('Notify Dev Success') {
-    when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
+        stage('Notify Dev') {
     steps {
         script {
             def recipient = env.COMMIT_AUTHOR_EMAIL?.trim() ?: "kthacker862@gmail.com"
-            emailext(
-                to: recipient,
-                subject: " Dev Deployment Success: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                    <p>Hi,</p>
-                    <p>The commit <b>${env.COMMIT_SHA}</b> on branch <b>${params.branch_name}</b> was successfully built and deployed to DEV.</p>
-                    <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
-                """,
-                mimeType: 'text/html',
-                from: SMTP_CREDENTIALS_USR
-            )
+            def status = currentBuild.currentResult ?: 'SUCCESS'  // will be SUCCESS, FAILURE, or ABORTED
+            def subject = "[${status}] Dev Deployment: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}"
+
+            try {
+                emailext(
+                    to: recipient,
+                    subject: subject,
+                    body: """
+                        <p>Hi,</p>
+                        <p>The commit <b>${env.COMMIT_SHA}</b> on branch <b>${params.branch_name}</b> has finished.</p>
+                        <p>Status: <b>${status}</b></p>
+                        <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
+                    """,
+                    mimeType: 'text/html',
+                    from: SMTP_CREDENTIALS_USR
+                )
+            } catch (err) {
+                echo "Failed to send Dev notification email: ${err}"
+            }
         }
     }
-        }
+}
 
 
 
