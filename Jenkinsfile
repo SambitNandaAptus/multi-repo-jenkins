@@ -118,7 +118,8 @@ stage('Debug Service Repo Checkout') {
                         sh """
                             ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=${env.SERVICE_NAME}-${env.COMMIT_SHA} \
-                            -Dsonar.sources=.
+                            -Dsonar.sources=. \
+                            -Dsonar.python.coverage.reportPaths=coverage.xml
                         """
                     }
                 }
