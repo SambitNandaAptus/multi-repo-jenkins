@@ -75,14 +75,14 @@ stage('Debug Service Repo Checkout') {
 
 
 
-        stage('Get Commit Info') {
-            steps {
-                script {
-                    env.COMMIT_SHA = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                    env.COMMIT_AUTHOR_EMAIL = sh(script: "git log -1 --pretty=format:'%ae'", returnStdout: true).trim()
-                }
-            }
-        }
+        // stage('Get Commit Info') {
+        //     steps {
+        //         script {
+        //             env.COMMIT_SHA = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+        //             env.COMMIT_AUTHOR_EMAIL = sh(script: "git log -1 --pretty=format:'%ae'", returnStdout: true).trim()
+        //         }
+        //     }
+        // }
        stage('Run Unit Tests in Docker') {
   
   steps {
