@@ -68,7 +68,7 @@ pipeline {
     steps {
         script {
             sh """
-                pip install -r requirements.txt
+                pip install pytest
                 pytest --junitxml=reports/test-results.xml --cov=. --cov-report=xml
             """
         }
