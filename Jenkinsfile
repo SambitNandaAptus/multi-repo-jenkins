@@ -75,7 +75,7 @@ pipeline {
              
             sh "ls -R /app"
         
-            
+            dir("${env.WORKSPACE}"){
             sh """
                 python3 -m venv venv
                 ./venv/bin/pip install --upgrade pip --no-cache-dir
@@ -85,6 +85,7 @@ pipeline {
                
                 ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
             """
+        }
         }
 
       
