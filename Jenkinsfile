@@ -42,16 +42,16 @@ pipeline {
         }
 
         stage('Checkout Service Repo') {
-            steps {
-                script {
-                    def branch = params.branch_name.replace('refs/heads/', '')
-                    // git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
-                    dir("${env.WORKSPACE}") {
+    steps {
+        dir("${env.WORKSPACE}") {
+            script {
+                def branch = params.branch_name.replace('refs/heads/', '')
                 git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
             }
-                }
-            }
         }
+    }
+}
+
 
         stage('Get Commit Info') {
             steps {
