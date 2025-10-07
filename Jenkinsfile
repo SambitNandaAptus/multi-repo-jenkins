@@ -63,38 +63,27 @@ pipeline {
             }
         }
        stage('Run Unit Tests') {
-    agent {
-        docker {
-            image 'python:3.10'
-            args "-v ${env.WORKSPACE}:/app -w /app"
-        }
-    }
+    agent any
     steps {
-        
         script {
-             
-            sh "ls -R /app"
-        
-            dir("${env.WORKSPACE}"){
-            sh """
-                python3 -m venv venv
-                ./venv/bin/pip install --upgrade pip --no-cache-dir
-             
-                ./venv/bin/pip install --no-cache-dir pytest pytest-cov
+            docker.image('python:3.10').inside {
+                sh "ls -R ${env.WORKSPACE}"  
+                dir("${env.WORKSPACE}") {
+                    sh """
+                        python3 -m venv venv
+                        ./venv/bin/pip install --upgrade pip --no-cache-dir
+                        ./venv/bin/pip install --no-cache-dir pytest pytest-cov
 
-               
-                ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-            """
-        }
+                        # Run tests in app/tests
+                        ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+                    """
+                }
+            }
         }
 
-      
-        junit 'reports/test-results.xml'
+        junit "${env.WORKSPACE}/reports/test-results.xml"
     }
 }
-
-
-
 
         stage('SonarQube Analysis') {
             when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
