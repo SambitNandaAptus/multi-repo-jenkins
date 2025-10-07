@@ -43,7 +43,7 @@ pipeline {
 
         stage('Checkout Service Repo') {
     steps {
-        dir("${env.WORKSPACE}") {
+        dir("${env.WORKSPACE}/service-repo") {
             script {
                 def branch = params.branch_name.replace('refs/heads/', '')
                 git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
@@ -62,28 +62,45 @@ pipeline {
                 }
             }
         }
-       stage('Run Unit Tests') {
-    agent any
+       stage('Run Unit Tests in Docker') {
+    agent {
+        docker {
+            image 'python:3.10'
+            args "-u 0" // run as root to avoid permission issues
+        }
+    }
     steps {
         script {
-            
-                sh "ls -R ${env.WORKSPACE}"  
-                dir("${env.WORKSPACE}") {
-                    sh """
-                        python3 -m venv venv
-                        ./venv/bin/pip install --upgrade pip --no-cache-dir
-                        ./venv/bin/pip install --no-cache-dir pytest pytest-cov
+            // List workspace content for debugging
+            sh "ls -R ${env.WORKSPACE}"
 
-                        # Run tests in app/tests
-                        ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-                    """
-                }
+            // Run tests inside service-repo folder
+            dir("${env.WORKSPACE}/service-repo") {
+                // Ensure reports directory exists
+                sh "mkdir -p reports"
+
+                // Setup Python virtual environment and install pytest + pytest-cov
+                sh """
+                    python3 -m venv venv
+                    ./venv/bin/pip install --upgrade pip --no-cache-dir
+                    ./venv/bin/pip install --no-cache-dir pytest pytest-cov
+                """
+
+                // Run pytest with coverage, output JUnit XML for Jenkins
+                sh """
+                    ./venv/bin/pytest app/tests \
+                        --junitxml=reports/test-results.xml \
+                        --cov=app \
+                        --cov-report=xml
+                """
             }
-        
 
-        junit "${env.WORKSPACE}/reports/test-results.xml"
+            // Publish JUnit test results to Jenkins
+            junit "${env.WORKSPACE}/service-repo/reports/test-results.xml"
+        }
     }
 }
+
 
         stage('SonarQube Analysis') {
             when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
