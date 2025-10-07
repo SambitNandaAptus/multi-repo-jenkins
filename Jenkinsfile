@@ -53,6 +53,21 @@ pipeline {
         }
     }
 }
+stage('Debug Service Repo Checkout') {
+    steps {
+        script {
+            echo "=== Debugging service-repo contents ==="
+            sh """
+                echo Current path: \$(pwd)
+                ls -lah ${env.WORKSPACE}/service-repo
+                echo "Git status inside service-repo (if any):"
+                cd ${env.WORKSPACE}/service-repo || echo "service-repo dir not found"
+                git status || echo "No git repo present here"
+            """
+        }
+    }
+}
+
 
 
         stage('Get Commit Info') {
