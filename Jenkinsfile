@@ -66,7 +66,7 @@ pipeline {
     agent any
     steps {
         script {
-            docker.image('python:3.10').inside {
+            
                 sh "ls -R ${env.WORKSPACE}"  
                 dir("${env.WORKSPACE}") {
                     sh """
@@ -79,7 +79,7 @@ pipeline {
                     """
                 }
             }
-        }
+        
 
         junit "${env.WORKSPACE}/reports/test-results.xml"
     }
