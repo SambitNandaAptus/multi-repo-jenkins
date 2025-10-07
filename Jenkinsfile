@@ -61,23 +61,26 @@ pipeline {
         stage('Run Unit Tests') {
     agent {
         docker {
-            image 'python:3.10' 
+            image 'python:3.10'
             args '-v $WORKSPACE:/app -w /app'
         }
     }
     steps {
+        sh "ls -R /app"
+    }        
+    steps {
         script {
             sh """
                 python3 -m venv venv
-               . venv/bin/activate
-                pip install pytest  pytest-cov
-                pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-
+                ./venv/bin/pip install --upgrade pip
+                ./venv/bin/pip install pytest pytest-cov
+                ./venv/bin/pytest /tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
             """
         }
         junit 'reports/test-results.xml'
     }
 }
+
 
 
         stage('SonarQube Analysis') {
