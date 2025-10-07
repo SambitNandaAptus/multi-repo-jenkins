@@ -83,31 +83,18 @@ stage('Debug Service Repo Checkout') {
                 }
             }
         }
-       stage('Run Unit Tests in Docker') {
-  agent {
-    docker {
-      image 'python:3.10-bullseye'
-      args "-u 1000:1000 -v ${env.WORKSPACE}/service-repo:/workspace -w /workspace"
-
-
+       dir("${env.WORKSPACE}/service-repo") {
+  stage('Run Unit Tests in Docker') {
+    agent {
+      docker {
+        image 'python:3.10-bullseye'
+        args "-u 1000:1000 -v ${env.WORKSPACE}/service-repo:/workspace -w /workspace"
+      }
     }
-  }
-  steps {
-    script {
-      sh """
-        echo " Checking contents"
-        pwd
-        ls -lah
-        ls -lah /workspace/app
-
-
-        python3 -m venv venv
-        ./venv/bin/pip install --upgrade pip
-        ./venv/bin/pip install pytest pytest-cov
-
-        mkdir -p reports
-        ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-      """
+    steps {
+      sh 'ls -lah /workspace/app'
+      sh 'python3 -m venv venv && ./venv/bin/pip install --upgrade pip pytest pytest-cov'
+      sh './venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml'
       junit "reports/test-results.xml"
     }
   }
