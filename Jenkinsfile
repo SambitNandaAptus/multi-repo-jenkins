@@ -92,25 +92,22 @@ stage('Debug Service Repo Checkout') {
   }
   steps {
     script {
-      dir("${env.WORKSPACE}/service-repo") {
-        echo "Checking contents inside service-repo"
-        echo "Workspace = ${env.WORKSPACE}"
-        sh """
-          pwd
-          ls -lah
-          ls -lah /workspace/app
+      sh """
+        echo "PWD inside Docker: \$(pwd)"
+        ls -lah        # this is /workspace
+        ls -lah app    # this works now because app is inside /workspace
 
-          python3 -m venv venv
-          ./venv/bin/pip install --upgrade pip
-          ./venv/bin/pip install pytest pytest-cov
-          mkdir -p reports
-          ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
-        """
-      }
-      junit "${env.WORKSPACE}/service-repo/reports/test-results.xml"
+        python3 -m venv venv
+        ./venv/bin/pip install --upgrade pip
+        ./venv/bin/pip install pytest pytest-cov
+        mkdir -p reports
+        ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+      """
+      junit "/workspace/reports/test-results.xml"
     }
   }
 }
+
 
 
 
