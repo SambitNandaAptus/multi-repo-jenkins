@@ -87,7 +87,8 @@ stage('Debug Service Repo Checkout') {
   agent {
     docker {
       image 'python:3.10-bullseye'
-      args "-u 1000:1000 -v $PWD/service-repo:/workspace -w /workspace"
+      args "-u 1000:1000 -v ${env.WORKSPACE}/service-repo:/workspace -w /workspace"
+
 
     }
   }
@@ -96,7 +97,8 @@ stage('Debug Service Repo Checkout') {
       sh """
         echo "=== Checking contents ==="
         pwd
-        ls -R
+        ls -lah
+l       ls -lah app
 
         python3 -m venv venv
         ./venv/bin/pip install --upgrade pip
