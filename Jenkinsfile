@@ -91,6 +91,7 @@ stage('Debug Service Repo Checkout') {
     }
   }
   steps {
+    deleteDir()
     script {
       sh """
         echo "PWD inside Docker: \$(pwd)"
