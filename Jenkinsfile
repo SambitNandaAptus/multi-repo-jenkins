@@ -45,7 +45,10 @@ pipeline {
             steps {
                 script {
                     def branch = params.branch_name.replace('refs/heads/', '')
-                    git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
+                    // git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
+                    dir("${env.WORKSPACE}") {
+                git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
+            }
                 }
             }
         }
@@ -78,7 +81,7 @@ pipeline {
                 ./venv/bin/pip install --no-cache-dir pytest pytest-cov
 
                
-                ./venv/bin/pytest app/test --junitxml=reports/test-results.xml --cov=app --cov-report=xml
+                ./venv/bin/pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
             """
         }
 
