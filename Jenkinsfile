@@ -84,7 +84,7 @@ pipeline {
 //                 }
 //             }
 //         }
-       stage('Run Unit Tests in Docker') {
+      stage('Run Unit Tests in Docker') {
     agent {
         docker {
             image 'python:3.10-bullseye'
@@ -92,19 +92,36 @@ pipeline {
         }
     }
     steps {
+        // Clean workspace before cloning
+        deleteDir()
+        
+        // Checkout the service repo properly
+        checkout([$class: 'GitSCM',
+            branches: [[name: params.branch_name.replace('refs/heads/', '')]],
+            userRemoteConfigs: [[
+                url: env.REPO_URL,
+                credentialsId: 'git-secret'
+            ]]
+        ])
+        
         script {
             sh """
                 
-                git clone -b ${params.branch_name.replace('refs/heads/', '')} ${env.REPO_URL} service
-                cd service
+                cd ${env.WORKSPACE}
+                
+                # Install Python dependencies
                 python3 -m pip install --upgrade pip
                 python3 -m pip install -r requirements.txt
                 python3 -m pip install pytest pytest-cov
+
+                # Run tests
                 mkdir -p reports
                 pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml
             """
-            junit "service-repo/reports/test-results.xml"
         }
+        
+        
+        junit "reports/test-results.xml"
     }
 }
 
