@@ -67,7 +67,8 @@ stage('Debug Service Repo Checkout') {
                 ls -lah ${env.WORKSPACE}
                 echo "Git status inside service-repo (if any):"
                 cd ${env.WORKSPACE} || echo "service-repo dir not found"
-                rm -rf venv
+                rm -rf venv/
+                echo "test"
                 git status || echo "No git repo present here"
             """
         }
