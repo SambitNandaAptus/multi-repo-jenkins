@@ -240,6 +240,7 @@ stage('Debug Service Repo Checkout') {
                     to: approvers,
                     subject: " Approval Needed: Promote ${env.SERVICE_NAME} to Staging",
                     body: """
+                        <p>Hello</p>
                         <p>The build for <b>${env.SERVICE_NAME}</b> (commit <code>${env.COMMIT_SHA}</code>) passed in <b>dev</b>.</p>
                         <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
                         <p>Click to approve: <a href='${env.BUILD_URL}input/'>Approve</a></p>
