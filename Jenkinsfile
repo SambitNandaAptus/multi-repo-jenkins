@@ -209,6 +209,7 @@ stage('Debug Service Repo Checkout') {
             try {
                 emailext(
                     to: recipient,
+                    from: "khushithacker2003@gmail.com"
                     subject: subject,
                     body: """
                         <p>Hi,</p>
