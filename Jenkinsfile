@@ -209,7 +209,7 @@ stage('Debug Service Repo Checkout') {
             try {
                 emailext(
                     to: recipient,
-                    from: "khushithacker2003@gmail.com"
+                    from: "khushithacker2003@gmail.com",
                     subject: subject,
                     body: """
                         <p>Hi,</p>
@@ -239,6 +239,7 @@ stage('Debug Service Repo Checkout') {
                 def approvers = "khushi.thacker@aptusdatalabs.com,santosh.sahoo@aptusdatalabs.com"
                 emailext(
                     to: approvers,
+                    from: "khushithacker2003@gmail.com",
                     subject: " Approval Needed: Promote ${env.SERVICE_NAME} to Staging",
                     body: """
                         <p>Hello</p>
@@ -279,6 +280,7 @@ stage('Debug Service Repo Checkout') {
             } catch(err) {
                 emailext(
                     to: "khushi.thacker@aptusdatalabs.com,${env.COMMIT_AUTHOR_EMAIL}",
+                    from: "khushithacker2003@gmail.com",
                     subject: " Staging Deployment NOT Approved: ${env.SERVICE_NAME}",
                     body: "<p>The deployment to STAGING was aborted or disapproved.</p>",
                     mimeType: 'text/html',
@@ -299,6 +301,7 @@ stage('Debug Service Repo Checkout') {
             def recipients = "khushi.thacker@aptusdatalabs.com,${env.COMMIT_AUTHOR_EMAIL ?: 'khushi.thacker@aptusdatalabs.com'}"
             emailext(
                 to: recipients,
+                from: "khushithacker2003@gmail.com",
                 subject: "Ready for Production: ${env.SERVICE_NAME}",
                 body: """
                     <p>Hi Team,</p>
