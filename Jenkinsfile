@@ -235,7 +235,7 @@ stage('Debug Service Repo Checkout') {
     steps {
         script {
             try {
-                def approvers = "khushi.thacker@aptusdatalabs.com","santosh.sahoo@aptusdatalabs.com"
+                def approvers = "khushi.thacker@aptusdatalabs.com,santosh.sahoo@aptusdatalabs.com"
                 emailext(
                     to: approvers,
                     subject: " Approval Needed: Promote ${env.SERVICE_NAME} to Staging",
