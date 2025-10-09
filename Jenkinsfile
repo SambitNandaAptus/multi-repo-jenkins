@@ -209,7 +209,6 @@ stage('Debug Service Repo Checkout') {
             try {
                 emailext(
                     to: recipient,
-                    from: "khushithacker2003@gmail.com",
                     subject: subject,
                     body: """
                         <p>Hi,</p>
@@ -344,7 +343,8 @@ stage('Debug Service Repo Checkout') {
          )
          emailext(
         to: "${env.COMMIT_AUTHOR_EMAIL}",
-        subject: "❌ Dev Deployment FAILED: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}",
+        from: "khushithacker2003@gmail.com",
+        subject: "Dev Deployment FAILED: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}",
         body: """
           <p>Hi,</p>
           <p>The build <b>#${env.BUILD_NUMBER}</b> failed due to a Quality Gate error.</p>
