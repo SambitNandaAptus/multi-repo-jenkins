@@ -67,9 +67,6 @@ stage('Debug Service Repo Checkout') {
                 ls -lah ${env.WORKSPACE}
                 echo "Git status inside service-repo (if any):"
                 cd ${env.WORKSPACE} || echo "service-repo dir not found"
-                rm -rf venv/
-                rm -rf app
-                rm -rf coverage.xml
                 echo "test"
                 git status || echo "No git repo present here"
             """
@@ -105,6 +102,7 @@ stage('Debug Service Repo Checkout') {
               
       """
       junit "reports/test-results.xml"
+      rm -rf venv/  
       
     }
   }
@@ -269,6 +267,9 @@ stage('Debug Service Repo Checkout') {
                                 chmod +x /tmp/deploy_compose.sh
                                 /tmp/deploy_compose.sh "${stagingServer}" "${env.REGISTRY}" "${env.REGISTRY_NAMESPACE}/${env.SERVICE_NAME}" "${env.IMAGE_TAG}" "${DOCKER_USER}" "${DOCKER_PASS}"
                             '
+                          
+                             rm -rf app
+                             rm -rf coverage.xml
                         """
                     }
                 }
