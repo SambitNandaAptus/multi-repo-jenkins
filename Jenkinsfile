@@ -195,6 +195,8 @@ stage('Debug Service Repo Checkout') {
                             chmod +x /tmp/deploy_compose.sh
                             /tmp/deploy_compose.sh "${server}" "${registry}" "${image}" "${tag}" "${DOCKER_USER}" "${DOCKER_PASS}"
                         '
+                         rm -rf app
+                         rm -rf coverage.xml
                     """
                     echo "[INFO] Deployment finished successfully!"
                 }
@@ -269,8 +271,7 @@ stage('Debug Service Repo Checkout') {
                                 /tmp/deploy_compose.sh "${stagingServer}" "${env.REGISTRY}" "${env.REGISTRY_NAMESPACE}/${env.SERVICE_NAME}" "${env.IMAGE_TAG}" "${DOCKER_USER}" "${DOCKER_PASS}"
                             '
                           
-                             rm -rf app
-                             rm -rf coverage.xml
+                            
                         """
                     }
                 }
