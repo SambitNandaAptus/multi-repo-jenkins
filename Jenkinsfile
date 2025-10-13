@@ -18,6 +18,9 @@ pipeline {
         REGISTRY_NAMESPACE = "aptusdatalabstech"
         OPENAI_API_KEY = credentials('OPENAI_API_KEY')
         PINECONE_API_KEY  = credentials('PINECONE_API_KEY')
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        Bucket-name = credentials('Bucket-name')
     }
 
     stages {
