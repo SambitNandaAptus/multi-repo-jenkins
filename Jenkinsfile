@@ -17,7 +17,7 @@ pipeline {
         REGISTRY          = "docker.io"
         REGISTRY_NAMESPACE = "aptusdatalabstech"
         OPENAI_API_KEY = credentials('OPENAI_API_KEY')
-        PINECONE_API_KEY  = credentials('PINECONE_API_KEY ')
+        PINECONE_API_KEY  = credentials('PINECONE_API_KEY')
     }
 
     stages {
