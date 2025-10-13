@@ -103,6 +103,8 @@ stage('Debug Service Repo Checkout') {
     mkdir -p reports
     pwd
     pip install -r requirements.txt
+    ls -R app/tests
+    pytest -v app/tests
     pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml  
       rm -rf venv/  
     
