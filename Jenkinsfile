@@ -128,19 +128,19 @@ stage('Debug Service Repo Checkout') {
                 }
             }
         }
-    //           stage('Quality Gate') {
-    //         when {
-    //     expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
-    // }
-    //         steps {
-    //             timeout(time: 2, unit: 'MINUTES') {
-    //                 script {
-    //                     def qg = waitForQualityGate(abortPipeline: true)
-    //                     echo "Quality Gate Status: ${qg.status}"
-    //                 }
-    //             }
-    //         }
-    //     }
+              stage('Quality Gate') {
+            when {
+        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
+    }
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    script {
+                        def qg = waitForQualityGate(abortPipeline: true)
+                        echo "Quality Gate Status: ${qg.status}"
+                    }
+                }
+            }
+        }
 
 
        stage('Build Docker Image') {
@@ -240,7 +240,7 @@ stage('Debug Service Repo Checkout') {
     steps {
         script {
             try {
-                def approvers = "khushi.thacker@aptusdatalabs.com"
+                def approvers = "khushi.thacker@aptusdatalabs.com,santosh.sahoo@aptusdatalabs.com"
                 emailext(
                     to: approvers,
                     from: "khushithacker2003@gmail.com",
