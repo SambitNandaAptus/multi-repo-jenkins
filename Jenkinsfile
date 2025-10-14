@@ -129,21 +129,22 @@ stage('Debug Service Repo Checkout') {
 
 
        stage('SonarQube Analysis') {
-            when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
-            steps {
-                withSonarQubeEnv('SonarServer') {
-                    script {
-                        def scannerHome = tool 'sonar-scanner'
-                        sh """
-                            ${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=${env.SERVICE_NAME} \
-                            -Dsonar.sources=. \
-                            -Dsonar.python.coverage.reportPaths=coverage.xml
-                        """
-                    }
-                }
+    when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
+    steps {
+        withSonarQubeEnv('SonarServer') {
+            script {
+                def scannerHome = tool 'sonar-scanner'
+                sh """
+                    ls -l reports/coverage.xml || echo 'coverage.xml not found'
+                    ${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=${env.SERVICE_NAME} \
+                        -Dsonar.sources=. \
+                        -Dsonar.python.coverage.reportPaths=reports/coverage.xml
+                """
             }
         }
+    }
+}
               stage('Quality Gate') {
             when {
         expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
