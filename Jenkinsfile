@@ -29,6 +29,7 @@ pipeline {
         LANGSMITH_ENDPOINT = credentials('LANGSMITH_ENDPOINT')
         LANGSMITH_API_KEY = credentials('LANGSMITH_API_KEY')
         LANGSMITH_PROJECT = credentials('LANGSMITH_PROJECT')
+        GOOGLE_API_KEY = credentials('GOOGLE_API_KEY')
     }
 
     stages {
