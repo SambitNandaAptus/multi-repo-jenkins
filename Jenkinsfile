@@ -140,6 +140,7 @@ stage('Debug Service Repo Checkout') {
                         -Dsonar.projectKey=${env.SERVICE_NAME} \
                         -Dsonar.sources=. \
                         -Dsonar.python.coverage.reportPaths=reports/coverage.xml
+                     rm -rf reports/coverage.xml   
                 """
             }
         }
