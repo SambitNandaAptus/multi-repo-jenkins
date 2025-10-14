@@ -114,7 +114,7 @@ stage('Debug Service Repo Checkout') {
     pip install -r requirements.txt
     ls -R app/tests
     pytest -v app/tests
-    pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml  
+    pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml:coverage.xml 
       rm -rf venv/  
     
               
