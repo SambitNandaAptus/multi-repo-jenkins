@@ -113,8 +113,8 @@ stage('Debug Service Repo Checkout') {
     pwd
     pip install -r requirements.txt
     ls -R app/tests
-    pytest -v app/tests
-    pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml:coverage.xml 
+    pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml:reports/coverage.xml
+
       rm -rf venv/  
     
               
@@ -213,7 +213,6 @@ stage('Debug Service Repo Checkout') {
                             /tmp/deploy_compose.sh "${server}" "${registry}" "${image}" "${tag}" "${DOCKER_USER}" "${DOCKER_PASS}"
                         '
                          rm -rf app
-                         rm -rf coverage.xml
                     """
                     echo "[INFO] Deployment finished successfully!"
                 }
