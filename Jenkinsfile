@@ -22,7 +22,13 @@ pipeline {
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
         BUCKET_NAME = credentials('Bucket-name')
         REDIS_HOST = credentials('REDIS_HOST')
-        REDIS_PORT = credentials('REDIS_PORT')                         
+        REDIS_PORT = credentials('REDIS_PORT')
+        DATABASE_URL = credentials('DATABASE_URL')
+        TRAVEL_DATABASE_URI = credentials('TRAVEL_DATABASE_URI')
+        LANGSMITH_TRACING = credentials('LANGSMITH_TRACING')
+        LANGSMITH_ENDPOINT = credentials('LANGSMITH_ENDPOINT')
+        LANGSMITH_API_KEY = credentials('LANGSMITH_API_KEY')
+        LANGSMITH_PROJECT = credentials('LANGSMITH_PROJECT')
     }
 
     stages {
