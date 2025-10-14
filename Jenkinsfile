@@ -108,7 +108,7 @@ stage('Debug Service Repo Checkout') {
     python3 -m venv venv
     . venv/bin/activate 
     pip install --upgrade pip
-    pip install pytest pytest-cov pytest-twisted
+    pip install pytest pytest-cov pytest-twisted twisted
     mkdir -p reports
     pwd
     pip install -r requirements.txt
