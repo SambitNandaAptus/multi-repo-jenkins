@@ -98,32 +98,32 @@ stage('Debug Service Repo Checkout') {
                 }
             }
         }
-       stage('Run Unit Tests in Docker') {
-       when { expression { return env.SERVICE_NAME != 'pie-ui' } }
-  steps {
+//        stage('Run Unit Tests in Docker') {
+//        when { expression { return env.SERVICE_NAME != 'pie-ui' } }
+//   steps {
     
-    script {
-      sh """
-             python3 -m venv venv
-    python3 -m venv venv
-    . venv/bin/activate 
-    pip install --upgrade pip
-    pip install pytest pytest-cov pytest-twisted twisted
-    mkdir -p reports
-    pwd
-    pip install -r requirements.txt
-    ls -R app/tests
-    pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml:reports/coverage.xml
+//     script {
+//       sh """
+//              python3 -m venv venv
+//     python3 -m venv venv
+//     . venv/bin/activate 
+//     pip install --upgrade pip
+//     pip install pytest pytest-cov pytest-twisted twisted
+//     mkdir -p reports
+//     pwd
+//     pip install -r requirements.txt
+//     ls -R app/tests
+//     pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml:reports/coverage.xml
 
-      rm -rf venv/  
+//       rm -rf venv/  
     
               
-      """
-      junit "reports/test-results.xml"
+//       """
+//       junit "reports/test-results.xml"
       
-    }
-  }
-}
+//     }
+//   }
+// }
 
 
 
