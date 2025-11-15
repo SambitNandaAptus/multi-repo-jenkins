@@ -255,7 +255,7 @@ stage('Debug Service Repo Checkout') {
     steps {
         script {
             try {
-                def approvers = "khushi.thacker@aptusdatalabs.com,santosh.sahoo@aptusdatalabs.com"
+                def approvers = "khushi.thacker@aptusdatalabs.com"
                 emailext(
                     to: approvers,
                     from: "khushithacker2003@gmail.com",
