@@ -125,49 +125,42 @@ stage('Debug Service Repo Checkout') {
 //   }
 // }
         stage('Run Unit Tests in Docker') {
+    agent {
+        docker {
+            image env.SERVICE_NAME == 'pie-ui' ? 'node:18' : 'python:3.10'
+            reuseNode true
+        }
+    }
     steps {
         script {
 
             if (env.SERVICE_NAME == 'pie-ui') {
-
                 echo "Running JS tests for pie-ui"
 
                 sh """
                     npm install
-                    npm run test -- --coverage
+                    npm test -- --coverage
                 """
 
-                // Publish coverage report (lcov or cobertura)
-                publishCoverage adapters: [
-                    coberturaAdapter('coverage/cobertura-coverage.xml')
-                ]
-
             } else {
-
                 echo "Running Python tests"
 
                 sh """
                     python3 -m venv venv
                     . venv/bin/activate
                     pip install --upgrade pip
-                    pip install pytest pytest-cov pytest-twisted twisted
+                    pip install pytest pytest-cov
                     mkdir -p reports
                     pip install -r requirements.txt
-                    pytest app/tests --junitxml=reports/test-results.xml \
-                                      --cov=app --cov-report=xml:reports/coverage.xml
-                    deactivate
-                    rm -rf venv
+                    pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml:reports/coverage.xml
                 """
 
                 junit "reports/test-results.xml"
-
-                publishCoverage adapters: [
-                    coberturaAdapter('reports/coverage.xml')
-                ]
             }
         }
     }
 }
+
 
 
 
