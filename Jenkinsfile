@@ -181,6 +181,26 @@ stage('Debug Service Repo Checkout') {
         }
     }
 }
+        stage('Cleanup Frontend Artifacts') {
+    when { 
+        expression { env.SERVICE_NAME == 'pie-ui' } 
+    }
+    steps {
+        script {
+            echo "Cleaning up node_modules, coverage reports, and temp folders…"
+
+            sh """
+                rm -rf node_modules || true
+                rm -rf coverage || true
+                rm -rf .nyc_output || true
+                rm -rf dist || true
+                rm -rf build || true
+                rm -rf reports || true
+            """
+        }
+    }
+}
+
 
               stage('Quality Gate') {
             when {
