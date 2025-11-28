@@ -98,32 +98,6 @@ stage('Debug Service Repo Checkout') {
                 }
             }
         }
-//        stage('Run Unit Tests in Docker') {
-//        when { expression { return env.SERVICE_NAME != 'pie-ui' } }
-//   steps {
-    
-//     script {
-//       sh """
-//              python3 -m venv venv
-//     python3 -m venv venv
-//     . venv/bin/activate 
-//     pip install --upgrade pip
-//     pip install pytest pytest-cov pytest-twisted twisted
-//     mkdir -p reports
-//     pwd
-//     pip install -r requirements.txt
-//     ls -R app/tests
-//     pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml:reports/coverage.xml
-
-//       rm -rf venv/  
-    
-              
-//       """
-//       junit "reports/test-results.xml"
-      
-//     }
-//   }
-// }
         stage('Run Unit Tests in Docker') {
     agent {
         docker {
@@ -146,6 +120,12 @@ stage('Debug Service Repo Checkout') {
                 echo "Running Python tests"
 
                 sh """
+                     rm -rf node_modules || true
+                       rm -rf coverage || true
+                      rm -rf .nyc_output || true
+                         rm -rf dist || true
+                        rm -rf build || true
+                      rm -rf reports || true
                     python3 -m venv venv
                     . venv/bin/activate
                     pip install --upgrade pip
@@ -178,25 +158,6 @@ stage('Debug Service Repo Checkout') {
                     rm -rf reports/coverage.xml
                 """
             }
-        }
-    }
-}
-        stage('Cleanup Frontend Artifacts') {
-    when { 
-        expression { env.SERVICE_NAME == 'pie-ui' } 
-    }
-    steps {
-        script {
-            echo "Cleaning up node_modules, coverage reports, and temp folders…"
-
-            sh """
-                rm -rf node_modules || true
-                rm -rf coverage || true
-                rm -rf .nyc_output || true
-                rm -rf dist || true
-                rm -rf build || true
-                rm -rf reports || true
-            """
         }
     }
 }
@@ -303,99 +264,6 @@ stage('Debug Service Repo Checkout') {
         }
     }
 }
-
-
-
-
-        
-        stage('Manual Approval & Deploy to Staging') {
-    when { expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' } }
-    steps {
-        script {
-            try {
-                def approvers = "khushi.thacker@aptusdatalabs.com"
-                emailext(
-                    to: approvers,
-                    from: "khushithacker2003@gmail.com",
-                    subject: " Approval Needed: Promote ${env.SERVICE_NAME} to Staging",
-                    body: """
-                        <p>Hello</p>
-                        <p>The build for <b>${env.SERVICE_NAME}</b> (commit <code>${env.COMMIT_SHA}</code>) passed in <b>dev</b>.</p>
-                        <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
-                        <p>Click to approve: <a href='${env.BUILD_URL}input/'>Approve</a></p>
-                        <p>The account username : "jenkins-admin"</p>
-                        <p>The password: "password"</p>
-                    """,
-                    mimeType: 'text/html'
-                )
-
-                timeout(time: 2, unit: 'HOURS') {
-                    input message: " Approve deployment of ${env.IMAGE_FULL} to STAGING?", ok: "Deploy"
-                }
-
-                sshagent(['ssh-deploy-key']) {
-                    withCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        def stagingServer = "192.168.1.235"
-                        def scriptPath = "${env.META_REPO_DIR}/scripts/deploy_compose.sh"
-                        sh "scp -o StrictHostKeyChecking=no ${scriptPath} aptus@${stagingServer}:/tmp/deploy_compose.sh"
-                        sh """
-                            ssh -o StrictHostKeyChecking=no aptus@${stagingServer} '
-                                chmod +x /tmp/deploy_compose.sh
-                                /tmp/deploy_compose.sh "${stagingServer}" "${env.REGISTRY}" "${env.REGISTRY_NAMESPACE}/${env.SERVICE_NAME}" "${env.IMAGE_TAG}" "${DOCKER_USER}" "${DOCKER_PASS}"
-                            '
-                          
-                            
-                        """
-                    }
-                }
-                emailext(
-                    to: "khushi.thacker@aptusdatalabs.com,${env.COMMIT_AUTHOR_EMAIL}",
-                    subject: " Staging Deployment Success: ${env.SERVICE_NAME}",
-                    body: "<p>Image has been successfully deployed to STAGING.</p>",
-                    mimeType: 'text/html',
-                    from: SMTP_CREDENTIALS_USR
-                )
-
-            } catch(err) {
-                emailext(
-                    to: "khushi.thacker@aptusdatalabs.com,${env.COMMIT_AUTHOR_EMAIL}",
-                    subject: " Staging Deployment NOT Approved: ${env.SERVICE_NAME}",
-                    body: "<p>The deployment to STAGING was aborted or disapproved.</p>",
-                    mimeType: 'text/html',
-                    from: SMTP_CREDENTIALS_USR
-                )
-               
-                throw err
-            }
-        }
-    }
-}
-        stage('Notify Production') {
-    when {
-        expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
-    }
-    steps {
-        script {
-            def recipients = "khushi.thacker@aptusdatalabs.com,${env.COMMIT_AUTHOR_EMAIL ?: 'khushi.thacker@aptusdatalabs.com'}"
-            emailext(
-                to: recipients,
-                subject: "Ready for Production: ${env.SERVICE_NAME}",
-                body: """
-                    <p>Hi Team,</p>
-                    <p>The service <b>${env.SERVICE_NAME}</b> has been successfully deployed to <b>STAGING</b>.</p>
-                    <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
-                    <p>It is now ready for production deployment.</p>
-                """,
-                mimeType: 'text/html',
-                from: env.SMTP_CREDENTIALS_USR
-            )
-        }
-    }
-}
-
-
-
-    }
 
     post {
     success {
