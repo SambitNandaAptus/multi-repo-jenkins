@@ -264,6 +264,7 @@ stage('Debug Service Repo Checkout') {
         }
     }
 }
+    }
 
     post {
     success {
@@ -302,4 +303,4 @@ stage('Debug Service Repo Checkout') {
  }
 
 }
-}
+
