@@ -116,7 +116,29 @@ stage('Debug Service Repo Checkout') {
                     npm test -- --coverage
                 """
 
-            } else {
+            }
+            else if (env.SERVICE_NAME=="pie-bl") {
+                echo "Running Python tests"
+
+                sh """
+                     rm -rf node_modules || true
+                       rm -rf coverage || true
+                      rm -rf .nyc_output || true
+                         rm -rf dist || true
+                        rm -rf build || true
+                      rm -rf reports || true
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install pytest pytest-cov
+                    mkdir -p reports
+                    pip install -r requirements.txt
+                    pytest --junitxml=reports/test-results.xml --cov=. --cov-report=term-missing --cov-report=xml:reports/coverage.xml
+                """
+
+                junit "reports/test-results.xml"
+            }
+            else {
                 echo "Running Python tests"
 
                 sh """
