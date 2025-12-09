@@ -16,6 +16,9 @@ pie-backend-logs:
 pie-backend-dashboard:
   REPO_URL: "https://github.com/Amneal-pie/pie-backend-dashboard.git"
   DEPLOY_SERVER: "192.168.1.235"
+Ra-Buddy:
+  REPO_URL: "https://github.com/Amneal-pie/Ra-Buddy.git"
+  DEPLOY_SERVER: "192.168.1.235"  
 pie-backend-auth:
   REPO_URL: "https://github.com/Amneal-pie/pie-backend-auth.git"
   DEPLOY_SERVER: "192.168.1.235" 
