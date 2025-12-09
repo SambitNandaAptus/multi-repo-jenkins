@@ -52,7 +52,7 @@ pipeline {
                     def service = config[params.repo_name]
                     if (!service) error "Repo '${params.repo_name}' not found or YAML malformed."
 
-                    env.SERVICE_NAME  = params.repo_name
+                    env.SERVICE_NAME  = params.repo_name.toLowerCase()
                     env.REPO_URL      = service.REPO_URL
                     env.DEPLOY_SERVER = service.DEPLOY_SERVER
                 }
