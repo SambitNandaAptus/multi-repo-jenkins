@@ -265,15 +265,15 @@ stage('Debug Service Repo Checkout') {
         script {
             def recipient = env.COMMIT_AUTHOR_EMAIL?.trim() ?: "kthacker862@gmail.com"
             def status = currentBuild.currentResult ?: 'SUCCESS'  // will be SUCCESS, FAILURE, or ABORTED
-            def subject = "[${status}] Dev Deployment: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}"
+            def subject = "[JENKINS][${status}] Dev Deployment: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}"
 
             try {
                 emailext(
                     to: recipient,
                     subject: subject,
                     body: """
-                        <p>Hi,</p>
-                        <p>The commit <b>${env.COMMIT_SHA}</b> on branch <b>${params.branch_name}</b> has finished.</p>
+                        <p>Hello,</p>
+                        <p>The deployment <b>${env.COMMIT_SHA}</b> on branch <b>${params.branch_name}</b> has finished.</p>
                         <p>Status: <b>${status}</b></p>
                         <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
                     """,
@@ -313,7 +313,7 @@ stage('Debug Service Repo Checkout') {
          emailext(
         to: "${env.COMMIT_AUTHOR_EMAIL}",
         from: "khushithacker2003@gmail.com",
-        subject: "Dev Deployment FAILED: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}",
+        subject: "[JENKINS] [CI FAILED]: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}",
         body: """
           <p>Hi,</p>
           <p>The build <b>#${env.BUILD_NUMBER}</b> failed due to a Quality Gate error.</p>
