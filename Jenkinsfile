@@ -72,6 +72,24 @@ pipeline {
         }
     }
 }
+        stage('Branch Guard') {
+    when { beforeAgent true }
+    steps {
+        script {
+            def branch = params.branch_name
+                .replace('refs/heads/', '')
+                .trim()
+
+            if (branch.startsWith('docs/')) {
+                currentBuild.result = 'NOT_BUILT'
+                error("Skipping CI for docs branch: ${branch}")
+            }
+
+            echo "Branch allowed: ${branch}"
+        }
+    }
+}
+
 stage('Debug Service Repo Checkout') {
     steps {
         script {
