@@ -41,9 +41,13 @@ pipeline {
                 }
             }
         }
+        stage('Load Notification Scripts') {
+    steps {
         script {
-    notifications = load "${env.META_REPO_DIR}/scripts/notifications.groovy"
-      }
+            notifications = load "${env.META_REPO_DIR}/scripts/notifications.groovy"
+        }
+    }
+}
 
 
         stage('Determine Service') {
