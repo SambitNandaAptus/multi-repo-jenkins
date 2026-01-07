@@ -41,26 +41,14 @@ pipeline {
                 }
             }
         }
-//         stage('Load Notification Scripts') {
-//     steps {
-//         script {
-//             notifications = load "${env.META_REPO_DIR}/scripts/notifications.groovy"
-//         }
-//     }
-// }
-        stage('Email Smoke Test') {
+        stage('Load Notification Scripts') {
     steps {
         script {
-            echo "Testing emailext from pipeline"
-            emailext(
-                to: "khushi.thacker@aptusdatalabs.com",
-                subject: "Jenkins pipeline email test",
-                body: "If you see this, emailext works from pipeline."
-            )
+            notifications = load "${env.META_REPO_DIR}/scripts/notifications.groovy"
         }
     }
 }
-
+        
 
 
         stage('Determine Service') {
