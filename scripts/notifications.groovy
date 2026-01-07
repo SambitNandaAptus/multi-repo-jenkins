@@ -60,7 +60,7 @@ def sendFailureEmail(serviceName, repoName) {
 
 def sendSuccessEmail(serviceName, repoName) {
     emailext(
-        to: env.COMMIT_AUTHOR_EMAIL",
+        to: env.COMMIT_AUTHOR_EMAIL,
         subject: "[JENKINS][CI]SUCCESS – ${serviceName} (${env.BRANCH_NAME})",
         mimeType: 'text/html',
         body: """
