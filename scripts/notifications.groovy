@@ -87,7 +87,7 @@ def sendSuccessEmail(serviceName, repoName) {
               <p><b>Service:</b> ${serviceName}</p>
               <p><b>Repository:</b> ${repoName}</p>
               <p><b>Branch:</b> ${env.BRANCH_NAME}</p>
-              <p><b>Commit:</b> ${env.GIT_COMMIT?.take(7)}</p>
+              <p><b>Commit:</b> ${env.COMMIT_SHA?.take(7)}</p>
               <p><b>Author:</b> ${env.COMMIT_AUTHOR_EMAIL}</p>
             </td>
           </tr>
