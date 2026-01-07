@@ -48,6 +48,19 @@ pipeline {
         }
     }
 }
+        stage('Email Smoke Test') {
+    steps {
+        script {
+            echo "Testing emailext from pipeline"
+            emailext(
+                to: "khushi.thacker@aptusdatalabs.com",
+                subject: "Jenkins pipeline email test",
+                body: "If you see this, emailext works from pipeline."
+            )
+        }
+    }
+}
+
 
 
         stage('Determine Service') {
