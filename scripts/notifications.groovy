@@ -62,7 +62,7 @@ def sendSuccessEmail(serviceName, repoName) {
     emailext(
         to: env.COMMIT_AUTHOR_EMAIL,
         from: "pie@aptusdatalabs.com",
-        subject: "[JENKINS][CI]SUCCESS – ${serviceName} (${env.BRANCH_NAME})",
+        subject: "[JENKINS][CD]SUCCESS – ${serviceName} (${env.BRANCH_NAME})",
         mimeType: 'text/html',
         body: """
 <!DOCTYPE html>
