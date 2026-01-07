@@ -41,6 +41,10 @@ pipeline {
                 }
             }
         }
+        script {
+    notifications = load "${env.META_REPO_DIR}/scripts/notifications.groovy"
+      }
+
 
         stage('Determine Service') {
             steps {
@@ -316,6 +320,15 @@ stage('Debug Service Repo Checkout') {
              context: 'CI/CD',
             description: 'Build passed'
          )
+        script {
+            def branch = params.branch_name.replace('refs/heads/', '')
+            if (branch == 'dev') {
+                notifications.sendSuccessEmail(
+                    env.SERVICE_NAME,
+                    params.repo_name
+                )
+            }
+        }
     }
      failure {
         githubNotify(
@@ -327,17 +340,13 @@ stage('Debug Service Repo Checkout') {
              context: 'CI/CD',
              description: 'Build failed'
          )
-         emailext(
-        to: "${env.COMMIT_AUTHOR_EMAIL}",
-        from: "khushithacker2003@gmail.com",
-        subject: "[JENKINS] [CI FAILED]: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}",
-        body: """
-          <p>Hi,</p>
-          <p>The build <b>#${env.BUILD_NUMBER}</b> failed due to a Quality Gate error.</p>
-          <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
-        """,
-        mimeType: 'text/html'
-      )
+         script {
+            notifications.sendFailureEmail(
+                env.SERVICE_NAME,
+                params.repo_name
+            )
+        }
+         
      }
  }
 
