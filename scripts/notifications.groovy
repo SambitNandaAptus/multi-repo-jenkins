@@ -1,7 +1,7 @@
 def sendFailureEmail(serviceName, repoName) {
     emailext(
         to: env.COMMIT_AUTHOR_EMAIL,
-        from: "pie@aptusdatalabs.com"
+        from: "pie@aptusdatalabs.com",
         subject: "[JENKINS][CI]FAILURE – ${serviceName} (${env.BRANCH_NAME})",
         mimeType: 'text/html',
         body: """
