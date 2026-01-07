@@ -285,32 +285,32 @@ stage('Debug Service Repo Checkout') {
         }
     }
 }
-        stage('Notify Dev') {
-    steps {
-        script {
-            def recipient = env.COMMIT_AUTHOR_EMAIL?.trim() ?: "kthacker862@gmail.com"
-            def status = currentBuild.currentResult ?: 'SUCCESS'  // will be SUCCESS, FAILURE, or ABORTED
-            def subject = "[JENKINS][${status}] Dev Deployment: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}"
+    //     stage('Notify Dev') {
+    // steps {
+    //     script {
+    //         def recipient = env.COMMIT_AUTHOR_EMAIL?.trim() ?: "kthacker862@gmail.com"
+    //         def status = currentBuild.currentResult ?: 'SUCCESS'  // will be SUCCESS, FAILURE, or ABORTED
+    //         def subject = "[JENKINS][${status}] Dev Deployment: ${env.SERVICE_NAME} #${env.BUILD_NUMBER}"
 
-            try {
-                emailext(
-                    to: recipient,
-                    subject: subject,
-                    body: """
-                        <p>Hello,</p>
-                        <p>The deployment <b>${env.COMMIT_SHA}</b> on branch <b>${params.branch_name}</b> has finished.</p>
-                        <p>Status: <b>${status}</b></p>
-                        <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
-                    """,
-                    mimeType: 'text/html',
-                    from: SMTP_CREDENTIALS_USR
-                )
-            } catch (err) {
-                echo "Failed to send Dev notification email: ${err}"
-            }
-        }
-    }
-}
+    //         try {
+    //             emailext(
+    //                 to: recipient,
+    //                 subject: subject,
+    //                 body: """
+    //                     <p>Hello,</p>
+    //                     <p>The deployment <b>${env.COMMIT_SHA}</b> on branch <b>${params.branch_name}</b> has finished.</p>
+    //                     <p>Status: <b>${status}</b></p>
+    //                     <p>Build link: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></p>
+    //                 """,
+    //                 mimeType: 'text/html',
+    //                 from: SMTP_CREDENTIALS_USR
+    //             )
+    //         } catch (err) {
+    //             echo "Failed to send Dev notification email: ${err}"
+    //         }
+    //     }
+    // }
+// }
     }
 
     post {
