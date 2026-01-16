@@ -155,7 +155,7 @@ stage('Debug Service Repo Checkout') {
                       rm -rf reports || true
                     python3 -m venv venv
                     . venv/bin/activate
-                    pip install --upgrade pip
+                    pip install --upgrade "attrs>=23.2.0"
                     pip install pytest pytest-cov
                     mkdir -p reports
                     pip install -r requirements.txt
