@@ -153,6 +153,7 @@ stage('Debug Service Repo Checkout') {
                          rm -rf dist || true
                         rm -rf build || true
                       rm -rf reports || true
+                      rm -rf venv
                     python3 -m venv venv
                     . venv/bin/activate
                     pip install --upgrade "attrs>=23.2.0"
@@ -174,6 +175,7 @@ stage('Debug Service Repo Checkout') {
                          rm -rf dist || true
                         rm -rf build || true
                       rm -rf reports || true
+                      rm -rf venv
                     python3 -m venv venv
                     . venv/bin/activate
                     pip install --upgrade pip
