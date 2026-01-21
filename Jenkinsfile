@@ -143,7 +143,7 @@ stage('Debug Service Repo Checkout') {
                 """
 
             }
-            else if (env.SERVICE_NAME=="pie-bl"|| env.SERVICE_NAME=="ra-buddy") {
+            else if (env.SERVICE_NAME=="pie-bl"|| env.SERVICE_NAME=="Ra-Buddy") {
                 echo "Running Python tests"
 
                 sh """
