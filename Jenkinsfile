@@ -2,6 +2,7 @@ pipeline {
     agent any
     options {
     skipDefaultCheckout(true)
+    disableConcurrentBuilds()    
 }
 
     parameters {
@@ -30,9 +31,16 @@ pipeline {
         LANGSMITH_API_KEY = credentials('LANGSMITH_API_KEY')
         LANGSMITH_PROJECT = credentials('LANGSMITH_PROJECT')
         GOOGLE_API_KEY = credentials('GOOGLE_API_KEY')
+        SERVICE_DIR = "${WORKSPACE}/services/${params.repo_name}"
     }
+    
 
     stages {
+        stage('Init') {
+    steps {
+        cleanWs(deleteDirs: true)
+    }
+}
 
         stage('Checkout Config Repo') {
             steps {
@@ -70,10 +78,10 @@ pipeline {
 
         stage('Checkout Service Repo') {
     steps {
-        dir("${env.WORKSPACE}") {
+        dir(env.SERVICE_DIR) {
             script {
                 echo "Cloning from URL: ${env.REPO_URL}"
-
+                deleteDir()
                 def branch = params.branch_name.replace('refs/heads/', '')
                 git branch: branch, url: env.REPO_URL, credentialsId: 'git-secret'
                 echo "Workspace = ${env.WORKSPACE}"
@@ -136,16 +144,18 @@ stage('Debug Service Repo Checkout') {
 
             if (env.SERVICE_NAME == 'pie-ui') {
                 echo "Running JS tests for pie-ui"
-
+                dir(env.SERVICE_DIR)
+                {
                 sh """
                     npm install
                     npm test -- --coverage
                 """
+                }
 
             }
             else if (env.SERVICE_NAME=="pie-bl"|| env.SERVICE_NAME=="Ra-Buddy") {
                 echo "Running Python tests"
-
+                dir(env.SERVICE_DIR){
                 sh """
                      rm -rf node_modules || true
                        rm -rf coverage || true
@@ -162,12 +172,13 @@ stage('Debug Service Repo Checkout') {
                     pip install -r requirements.txt
                     pytest --junitxml=reports/test-results.xml --cov=. --cov-report=term-missing --cov-report=xml:reports/coverage.xml
                 """
+                }
 
                 junit "reports/test-results.xml"
             }
             else {
                 echo "Running Python tests"
-
+                dir(env.SERVICE_DIR){
                 sh """
                      rm -rf node_modules || true
                        rm -rf coverage || true
@@ -186,6 +197,7 @@ stage('Debug Service Repo Checkout') {
                 """
 
                 junit "reports/test-results.xml"
+                }
             }
         }
     }
@@ -202,10 +214,11 @@ stage('Debug Service Repo Checkout') {
         withSonarQubeEnv('SonarServer') {
             script {
                 def scannerHome = tool 'sonar-scanner'
+                dir(env.SERVICE_DIR){
                 sh """
                     ls -l reports/coverage.xml || echo 'coverage.xml not found'
                     ${scannerHome}/bin/sonar-scanner
-                    rm -rf reports/coverage.xml
+                    rm -rf reports/coverage.xml}
                 """
             }
         }
@@ -240,11 +253,12 @@ stage('Debug Service Repo Checkout') {
 
                     withCredentials([usernamePassword(credentialsId: 'docker-creds',
                                                       usernameVariable: 'DOCKER_USER',
-                                                      passwordVariable: 'DOCKER_PASS')]) {
+                        dir(env.SERVICE_DIR){                              passwordVariable: 'DOCKER_PASS')]) {
                         sh """
                             chmod +x "${scriptPath}"
                             "${scriptPath}" "${imageTag}" "${registry}" "${DOCKER_USER}" "${DOCKER_PASS}"
                         """
+                        }
                     }
                 }
             }
@@ -272,6 +286,7 @@ stage('Debug Service Repo Checkout') {
                     }
 
                     echo "[INFO] Copying deploy script to remote server..."
+                    dir(env.SERVICE_DIR){
                     sh "scp -o StrictHostKeyChecking=no ${scriptPath} aptus@${server}:/tmp/deploy_compose.sh"
 
                     echo "[INFO] Running deploy script on remote server..."
@@ -282,6 +297,7 @@ stage('Debug Service Repo Checkout') {
                         '
                          rm -rf app
                     """
+                    }
                     echo "[INFO] Deployment finished successfully!"
                 }
             }
