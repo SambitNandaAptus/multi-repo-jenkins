@@ -354,12 +354,14 @@ stage('Debug Service Repo Checkout') {
          )
         script {
             def branch = params.branch_name.replace('refs/heads/', '')
+             dir(env.SERVICE_DIR) {
             if (branch == 'dev') {
                 notifications.sendSuccessEmail(
                     env.SERVICE_NAME,
                     params.repo_name
                 )
             }
+        }
         }
     }
      failure {
@@ -372,6 +374,7 @@ stage('Debug Service Repo Checkout') {
              context: 'CI/CD',
              description: 'Build failed'
          )
+          dir(env.SERVICE_DIR) {
          script {
             notifications.sendFailureEmail(
                 env.SERVICE_NAME,
@@ -379,6 +382,7 @@ stage('Debug Service Repo Checkout') {
             )
         }
          
+     }
      }
  }
 
