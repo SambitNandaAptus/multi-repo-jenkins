@@ -344,47 +344,37 @@ stage('Debug Service Repo Checkout') {
     post {
     success {
         githubNotify(
-          account: 'Amneal-pie',                              
-           repo: "${params.repo_name}",                              
-            sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
-            credentialsId: 'git-secret',                            
-           status: 'SUCCESS',                                         
-             context: 'CI/CD',
+            account: 'Amneal-pie',
+            repo: params.repo_name,
+            sha: env.COMMIT_SHA,
+            credentialsId: 'git-secret',
+            status: 'SUCCESS',
+            context: 'CI/CD',
             description: 'Build passed'
-         )
+        )
         script {
-            def branch = params.branch_name.replace('refs/heads/', '')
-             dir(env.SERVICE_DIR) {
-            if (branch == 'dev') {
-                notifications.sendSuccessEmail(
-                    env.SERVICE_NAME,
-                    params.repo_name
-                )
+            if (params.branch_name.replace('refs/heads/', '') == 'dev') {
+                notifications.sendSuccessEmail(env.SERVICE_NAME, params.repo_name)
             }
         }
-        }
     }
-     failure {
+
+    failure {
         githubNotify(
             account: 'Amneal-pie',
-            repo: "${params.repo_name}",
-           sha: sh(script: "git rev-parse HEAD", returnStdout: true).trim(),
-           credentialsId: 'git-secret',
-             status: 'FAILURE',
-             context: 'CI/CD',
-             description: 'Build failed'
-         )
-          dir(env.SERVICE_DIR) {
-         script {
-            notifications.sendFailureEmail(
-                env.SERVICE_NAME,
-                params.repo_name
-            )
+            repo: params.repo_name,
+            sha: env.COMMIT_SHA,
+            credentialsId: 'git-secret',
+            status: 'FAILURE',
+            context: 'CI/CD',
+            description: 'Build failed'
+        )
+        script {
+            notifications.sendFailureEmail(env.SERVICE_NAME, params.repo_name)
         }
-         
-     }
-     }
- }
+    }
+}
+
 
 }
 
