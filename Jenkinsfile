@@ -110,6 +110,7 @@ stage('Debug Service Repo Checkout') {
     steps {
         script {
             echo "Debugging service-repo contents"
+             dir(env.SERVICE_DIR) {
             sh """
                 echo Current path: \$(pwd)
                 ls -lah ${env.WORKSPACE}
@@ -119,6 +120,7 @@ stage('Debug Service Repo Checkout') {
                 git status || echo "No git repo present here"
             """
         }
+        }
     }
 }
 
@@ -126,17 +128,19 @@ stage('Debug Service Repo Checkout') {
 
         stage('Get Commit Info') {
             steps {
+                 dir(env.SERVICE_DIR) {
                 script {
                     env.COMMIT_SHA = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                     env.COMMIT_AUTHOR_EMAIL = sh(script: "git log -1 --pretty=format:'%ae'", returnStdout: true).trim()
                 }
+            }
             }
         }
         stage('Run Unit Tests in Docker') {
     agent {
         docker {
             image env.SERVICE_NAME == 'pie-ui' ? 'node:18' : 'python:3.10'
-            reuseNode true
+            reuseNode false
         }
     }
     steps {
@@ -246,6 +250,7 @@ stage('Debug Service Repo Checkout') {
         expression { return params.branch_name.replaceAll('refs/heads/', '') == 'dev' }
     }
             steps {
+                 dir(env.SERVICE_DIR) {
                 script {
                     def imageTag   = "${env.SERVICE_NAME}:${params.branch_name.replaceAll('refs/heads/', '').replaceAll('/', '-')}"
                     def registry   = "docker.io"
@@ -253,7 +258,7 @@ stage('Debug Service Repo Checkout') {
 
                     withCredentials([usernamePassword(credentialsId: 'docker-creds',
                                                       usernameVariable: 'DOCKER_USER',
-                        dir(env.SERVICE_DIR){                              passwordVariable: 'DOCKER_PASS')]) {
+                                                passwordVariable: 'DOCKER_PASS')]) {
                         sh """
                             chmod +x "${scriptPath}"
                             "${scriptPath}" "${imageTag}" "${registry}" "${DOCKER_USER}" "${DOCKER_PASS}"
@@ -262,7 +267,8 @@ stage('Debug Service Repo Checkout') {
                     }
                 }
             }
-        }
+            }
+        
 
 
               stage('Deploy Service') {
@@ -273,7 +279,8 @@ stage('Debug Service Repo Checkout') {
         sshagent(['ssh-deploy-key']) {
             withCredentials([usernamePassword(credentialsId: 'docker-creds',
                                               usernameVariable: 'DOCKER_USER',
-                                              passwordVariable: 'DOCKER_PASS')]) {
+                                             passwordVariable: 'DOCKER_PASS')]) {
+                 dir(env.SERVICE_DIR) {
                 script {
                     def server     = "192.168.1.235"
                     def registry   = "docker.io"
@@ -286,7 +293,7 @@ stage('Debug Service Repo Checkout') {
                     }
 
                     echo "[INFO] Copying deploy script to remote server..."
-                    dir(env.SERVICE_DIR){
+                    
                     sh "scp -o StrictHostKeyChecking=no ${scriptPath} aptus@${server}:/tmp/deploy_compose.sh"
 
                     echo "[INFO] Running deploy script on remote server..."
@@ -297,9 +304,10 @@ stage('Debug Service Repo Checkout') {
                         '
                          rm -rf app
                     """
-                    }
+                    
                     echo "[INFO] Deployment finished successfully!"
                 }
+            }
             }
         }
     }
