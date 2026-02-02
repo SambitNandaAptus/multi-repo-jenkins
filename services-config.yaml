@@ -31,3 +31,8 @@ pie-ui:
 fastapi-demo-app:
   REPO_URL: "https://github.com/SambitNandaAptus/fastapi-demo-app.git"
   DEPLOY_SERVER: "192.168.1.235" 
+pie-RnD-bl:
+  REPO_URL: "https://github.com/Amneal-pie/pie-RnD-bl "
+  DEPLOY_SERVER: "192.168.1.235"   
+  
+  
