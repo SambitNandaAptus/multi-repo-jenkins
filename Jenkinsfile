@@ -17,20 +17,6 @@ pipeline {
         SMTP_CREDENTIALS  = credentials('git-test')
         REGISTRY          = "docker.io"
         REGISTRY_NAMESPACE = "aptusdatalabstech"
-        OPENAI_API_KEY = credentials('OPENAI_API_KEY')
-        PINECONE_API_KEY  = credentials('PINECONE_API_KEY')
-        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-        BUCKET_NAME = credentials('Bucket-name')
-        REDIS_HOST = credentials('REDIS_HOST')
-        REDIS_PORT = credentials('REDIS_PORT')
-        DATABASE_URL = credentials('DATABASE_URL')
-        TRAVEL_DATABASE_URI = credentials('TRAVEL_DATABASE_URI')
-        LANGSMITH_TRACING = credentials('LANGSMITH_TRACING')
-        LANGSMITH_ENDPOINT = credentials('LANGSMITH_ENDPOINT')
-        LANGSMITH_API_KEY = credentials('LANGSMITH_API_KEY')
-        LANGSMITH_PROJECT = credentials('LANGSMITH_PROJECT')
-        GOOGLE_API_KEY = credentials('GOOGLE_API_KEY')
         SERVICE_DIR = "${WORKSPACE}/services/${params.repo_name}"
     }
     
