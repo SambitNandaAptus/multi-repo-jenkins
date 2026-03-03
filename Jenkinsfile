@@ -32,7 +32,7 @@ pipeline {
         stage('Checkout Config Repo') {
             steps {
                 dir("${env.META_REPO_DIR}") {
-                    git branch: "main", url: "https://github.com/SambitNandaAptus/multi-repo-jenkins.git"
+                    git branch: "main", url: "https://github.com/SambitNandaAptus/multi-repo-jenkins.git",credentialsId: "git-secret"
                 }
             }
         }
