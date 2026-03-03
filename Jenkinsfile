@@ -1,3 +1,4 @@
+def notifications
 pipeline {
     agent any
     options {
