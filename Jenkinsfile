@@ -34,6 +34,7 @@ pipeline {
                 dir("${env.META_REPO_DIR}") {
                     git branch: "main", url: "https://github.com/SambitNandaAptus/multi-repo-jenkins.git",credentialsId: "git-secret"
                 }
+                sh "ls -lah ${env.META_REPO_DIR}"
             }
         }
         stage('Load Notification Scripts') {
