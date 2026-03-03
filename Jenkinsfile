@@ -47,21 +47,42 @@ pipeline {
 
 
         stage('Determine Service') {
-            steps {
-                script {
-                    def config = readYaml file: "${env.META_REPO_DIR}/services-config.yaml"
-                    if (!config.containsKey(params.repo_name)) {
-                        error "Repo ${params.repo_name} not configured in services-config.yaml"
-                    }
-                    def service = config[params.repo_name]
-                    if (!service) error "Repo '${params.repo_name}' not found or YAML malformed."
+    steps {
+        script {
 
-                    env.SERVICE_NAME  = params.repo_name.toLowerCase()
-                    env.REPO_URL      = service.REPO_URL
-                    env.DEPLOY_SERVER = service.DEPLOY_SERVER
-                }
+            echo "repo_name param: ${params.repo_name}"
+            echo "META_REPO_DIR: ${env.META_REPO_DIR}"
+
+            if (!params.repo_name?.trim()) {
+                error "repo_name parameter is missing from webhook."
             }
+
+            def yamlPath = "${env.META_REPO_DIR}/services-config.yaml"
+
+            if (!fileExists(yamlPath)) {
+                error "services-config.yaml not found at ${yamlPath}"
+            }
+
+            def config = readYaml file: yamlPath
+
+            def repoKey = params.repo_name.trim().toLowerCase()
+
+            if (!config.containsKey(repoKey)) {
+                error "Repo '${repoKey}' not configured in services-config.yaml. Available keys: ${config.keySet()}"
+            }
+
+            def service = config[repoKey]
+
+            env.SERVICE_NAME  = repoKey
+            env.REPO_URL      = service.REPO_URL ?: ""
+            env.DEPLOY_SERVER = service.DEPLOY_SERVER ?: ""
+
+            echo "Service Loaded:"
+            echo "REPO_URL: ${env.REPO_URL}"
+            echo "DEPLOY_SERVER: ${env.DEPLOY_SERVER}"
         }
+    }
+}
 
         stage('Checkout Service Repo') {
     steps {
