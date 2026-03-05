@@ -33,6 +33,10 @@ fastapi-demo-app:
   DEPLOY_SERVER: "192.168.1.235" 
 pie-RnD-bl:
   REPO_URL: "https://github.com/Amneal-pie/pie-RnD-bl "
-  DEPLOY_SERVER: "192.168.1.235"   
+  DEPLOY_SERVER: "192.168.1.235" 
+aptus-license-setup:
+  REPO_URL: "https://github.com/aptusdatalabstech/aptus-license-setup.git"
+  DEPLOY_SERVER: "192.168.1.235"  
+  
   
   
