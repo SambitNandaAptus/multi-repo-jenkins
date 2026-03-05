@@ -186,9 +186,10 @@ stage('Debug Service Repo Checkout') {
                     pip install -r requirements.txt
                     pytest --junitxml=reports/test-results.xml --cov=. --cov-report=term-missing --cov-report=xml:reports/coverage.xml
                 """
+                    junit "reports/test-results.xml"
                 }
 
-                junit "reports/test-results.xml"
+                
             }
             else {
                 echo "Running Python tests"
