@@ -167,7 +167,7 @@ stage('Debug Service Repo Checkout') {
                 }
 
             }
-            else if (env.SERVICE_NAME=="pie-bl"|| env.SERVICE_NAME=="Ra-Buddy") {
+            else if (env.SERVICE_NAME=="pie-bl"|| env.SERVICE_NAME=="Ra-Buddy" || env.SERVICE_NAME=="aptus-license-setup") {
                 echo "Running Python tests"
                 dir(env.SERVICE_DIR){
                 sh """
