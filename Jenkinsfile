@@ -352,8 +352,12 @@ stage('Debug Service Repo Checkout') {
 
     post {
     success {
+        script {
+
+            def githubAccount = env.REPO_URL.tokenize('/')[3]
+
         githubNotify(
-            account: 'Amneal-pie',
+            account: githubAccount,
             repo: params.repo_name,
             sha: env.COMMIT_SHA,
             credentialsId: 'git-secret',
@@ -366,11 +370,16 @@ stage('Debug Service Repo Checkout') {
                 notifications.sendSuccessEmail(env.SERVICE_NAME, params.repo_name)
             }
         }
+        }
     }
 
     failure {
+        script {
+
+            def githubAccount = env.REPO_URL.tokenize('/')[3]
+
         githubNotify(
-            account: 'Amneal-pie',
+            account: githubAccount,
             repo: params.repo_name,
             sha: env.COMMIT_SHA,
             credentialsId: 'git-secret',
@@ -381,6 +390,7 @@ stage('Debug Service Repo Checkout') {
         script {
             notifications.sendFailureEmail(env.SERVICE_NAME, params.repo_name)
         }
+    }
     }
 }
 
