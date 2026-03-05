@@ -77,6 +77,7 @@ pipeline {
             env.SERVICE_NAME  = repoKey
             env.REPO_URL      = service.REPO_URL ?: ""
             env.DEPLOY_SERVER = service.DEPLOY_SERVER ?: ""
+            env.GITHUB_ACCOUNT = service.GITHUB_ACCOUNT ?: ""
 
             echo "Service Loaded:"
             echo "REPO_URL: ${env.REPO_URL}"
@@ -351,47 +352,44 @@ stage('Debug Service Repo Checkout') {
     }
 
     post {
+
     success {
         script {
 
-            def githubAccount = env.REPO_URL.tokenize('/')[3]
+            githubNotify(
+                account: env.GITHUB_ACCOUNT,
+                repo: env.REPO_NAME,
+                sha: env.COMMIT_SHA,
+                credentialsId: 'git-secret',
+                status: 'SUCCESS',
+                context: 'CI/CD',
+                description: 'Build passed'
+            )
 
-        githubNotify(
-            account: githubAccount,
-            repo: params.repo_name,
-            sha: env.COMMIT_SHA,
-            credentialsId: 'git-secret',
-            status: 'SUCCESS',
-            context: 'CI/CD',
-            description: 'Build passed'
-        )
-        script {
             if (params.branch_name.replace('refs/heads/', '') == 'dev') {
-                notifications.sendSuccessEmail(env.SERVICE_NAME, params.repo_name)
+                notifications.sendSuccessEmail(env.SERVICE_NAME, env.REPO_NAME)
             }
-        }
         }
     }
 
     failure {
         script {
 
-            def githubAccount = env.REPO_URL.tokenize('/')[3]
+            githubNotify(
+                account: env.GITHUB_ACCOUNT,
+                repo: env.REPO_NAME,
+                sha: env.COMMIT_SHA,
+                credentialsId: 'git-secret',
+                status: 'FAILURE',
+                context: 'CI/CD',
+                description: 'Build failed'
+            )
 
-        githubNotify(
-            account: githubAccount,
-            repo: params.repo_name,
-            sha: env.COMMIT_SHA,
-            credentialsId: 'git-secret',
-            status: 'FAILURE',
-            context: 'CI/CD',
-            description: 'Build failed'
-        )
-        script {
-            notifications.sendFailureEmail(env.SERVICE_NAME, params.repo_name)
+            notifications.sendFailureEmail(env.SERVICE_NAME, env.REPO_NAME)
         }
     }
-    }
+
+}
 }
 
 
