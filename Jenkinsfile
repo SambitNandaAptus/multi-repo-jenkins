@@ -349,16 +349,15 @@ stage('Debug Service Repo Checkout') {
     //     }
     // }
 // }
-    
+    }
 
-    post {
+post {
 
     success {
         script {
-
             githubNotify(
                 account: env.GITHUB_ACCOUNT,
-                repo: env.REPO_NAME,
+                repo: params.repo_name,
                 sha: env.COMMIT_SHA,
                 credentialsId: 'git-secret',
                 status: 'SUCCESS',
@@ -367,17 +366,16 @@ stage('Debug Service Repo Checkout') {
             )
 
             if (params.branch_name.replace('refs/heads/', '') == 'dev') {
-                notifications.sendSuccessEmail(env.SERVICE_NAME, env.REPO_NAME)
+                notifications.sendSuccessEmail(env.SERVICE_NAME, params.repo_name)
             }
         }
     }
 
     failure {
         script {
-
             githubNotify(
                 account: env.GITHUB_ACCOUNT,
-                repo: env.REPO_NAME,
+                repo: params.repo_name,
                 sha: env.COMMIT_SHA,
                 credentialsId: 'git-secret',
                 status: 'FAILURE',
@@ -385,12 +383,11 @@ stage('Debug Service Repo Checkout') {
                 description: 'Build failed'
             )
 
-            notifications.sendFailureEmail(env.SERVICE_NAME, env.REPO_NAME)
+            notifications.sendFailureEmail(env.SERVICE_NAME, params.repo_name)
         }
     }
 
-}
-}
+}    
 
 
 }
