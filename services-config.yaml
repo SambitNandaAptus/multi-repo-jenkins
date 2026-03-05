@@ -8,33 +8,42 @@ fastapi-test:
   REPO_URL: "https://github.com/KhushiT-aptus/fastapi-test.git"
   DEPLOY_SERVER: "192.168.1.235"  
 pie-backend-chatbot:
+  GITHUB_ACCOUNT: "Amneal-pie"
   REPO_URL: "https://github.com/Amneal-pie/pie-backend-chatbot.git"
   DEPLOY_SERVER: "192.168.1.235" 
 pie-backend-logs:
+  GITHUB_ACCOUNT: "Amneal-pie"
   REPO_URL: "https://github.com/Amneal-pie/pie-backend-logs.git"
   DEPLOY_SERVER: "192.168.1.235" 
 pie-backend-dashboard:
+  GITHUB_ACCOUNT: "Amneal-pie"
   REPO_URL: "https://github.com/Amneal-pie/pie-backend-dashboard.git"
   DEPLOY_SERVER: "192.168.1.235"
 Ra-Buddy:
+  GITHUB_ACCOUNT: "Amneal-pie"
   REPO_URL: "https://github.com/Amneal-pie/Ra-Buddy.git"
   DEPLOY_SERVER: "192.168.1.235"  
 pie-backend-auth:
+  GITHUB_ACCOUNT: "Amneal-pie"
   REPO_URL: "https://github.com/Amneal-pie/pie-backend-auth.git"
   DEPLOY_SERVER: "192.168.1.235" 
 pie-bl:
+  GITHUB_ACCOUNT: "Amneal-pie"
   REPO_URL: "https://github.com/Amneal-pie/pie-bl.git"
   DEPLOY_SERVER: "192.168.1.235" 
 pie-ui:
+  GITHUB_ACCOUNT: "Amneal-pie"
   REPO_URL: "https://github.com/Amneal-pie/pie-ui.git"
   DEPLOY_SERVER: "192.168.1.235"  
 fastapi-demo-app:
   REPO_URL: "https://github.com/SambitNandaAptus/fastapi-demo-app.git"
   DEPLOY_SERVER: "192.168.1.235" 
 pie-RnD-bl:
+  GITHUB_ACCOUNT: "Amneal-pie"
   REPO_URL: "https://github.com/Amneal-pie/pie-RnD-bl "
   DEPLOY_SERVER: "192.168.1.235" 
 aptus-license-setup:
+  GITHUB_ACCOUNT: "aptusdatalabstech"
   REPO_URL: "https://github.com/aptusdatalabstech/aptus-license-setup.git"
   DEPLOY_SERVER: "192.168.1.235"  
   
