@@ -26,7 +26,9 @@ ENV_PATH="/home/aptus/pie-dev-dir/${SERVICE_NAME}/.env"
 echo "[DEPLOY] Using env file: ${ENV_PATH}"
 
 # docker compose -f /home/aptus/pie-dev-dir/docker-compose.yml --env-file "${ENV_PATH}" up -d
-docker compose -f /home/aptus/pie-dev-dir/docker-compose.yml  --env-file "${ENV_PATH}" up -d --no-deps --force-recreate ${SERVICE_NAME}
+docker compose -f /home/aptus/pie-dev-dir/docker-compose.yml \
+  --env-file "${ENV_PATH}" \
+  up -d --no-deps --force-recreate --remove-orphans ${SERVICE_NAME}
 
 
 
