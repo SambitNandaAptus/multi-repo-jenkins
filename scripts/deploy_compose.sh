@@ -16,8 +16,6 @@ echo "${DOCKER_PASS}" | docker login "${REGISTRY}" -u "${DOCKER_USER}" --passwor
 docker pull "${IMAGE}:${TAG}"
 
 # Stop and remove the existing container (if any)
-docker stop ${IMAGE##*/} || true
-docker rm ${IMAGE##*/} || true
 
 # Use docker-compose to start the service
 # Assumes docker-compose.yml exists on the remote server in /tmp
