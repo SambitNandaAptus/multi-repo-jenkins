@@ -19,7 +19,7 @@ pie-backend-dashboard:
   GITHUB_ACCOUNT: "Amneal-pie"
   REPO_URL: "https://github.com/Amneal-pie/pie-backend-dashboard.git"
   DEPLOY_SERVER: "192.168.1.235"
-Ra-Buddy:
+ra-buddy:
   GITHUB_ACCOUNT: "Amneal-pie"
   REPO_URL: "https://github.com/Amneal-pie/Ra-Buddy.git"
   DEPLOY_SERVER: "192.168.1.235"  
