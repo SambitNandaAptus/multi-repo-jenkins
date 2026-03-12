@@ -185,6 +185,7 @@ stage('Debug Service Repo Checkout') {
                     mkdir -p reports
                     pip install -r requirements.txt
                     pytest --junitxml=reports/test-results.xml --cov=. --cov-report=term-missing --cov-report=xml:reports/coverage.xml
+                     rm -rf venv
                 """
                     junit "reports/test-results.xml"
                 }
@@ -209,6 +210,7 @@ stage('Debug Service Repo Checkout') {
                     mkdir -p reports
                     pip install -r requirements.txt
                     pytest app/tests --junitxml=reports/test-results.xml --cov=app --cov-report=xml:reports/coverage.xml
+                     rm -rf venv
                 """
 
                 junit "reports/test-results.xml"
